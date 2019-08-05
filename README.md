@@ -6,7 +6,7 @@ WIP
 
 v0.3
 
-![Screenshot](screenshot/screenshot1.png)
+![Screenshot](screenshot/screenshot1.jpg)
 
 'New' - create new particle system.
 
