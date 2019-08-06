@@ -7,7 +7,7 @@ local unpack = table.unpack or unpack
 
 local SET = {
     APPNAME = love.window.getTitle(),
-    VER = '0.3',
+    VER = '0.4',
     SAVE = 'photonsave.lua',
     FULLSCR = love.window.getFullscreen(),
     WID = love.graphics.getWidth(),
@@ -15,7 +15,7 @@ local SET = {
     MIDWID = love.graphics.getWidth() / 2,
     MIDHEI = love.graphics.getHeight() / 2,
     SCALE = {1,1},
-    DELAY = 0.3,
+    DELAY = 0.4,
 
     EMPTY = {0,0,0,0},
     WHITE = {1,1,1,1},
@@ -27,15 +27,15 @@ local SET = {
     DARKGRAY = {32/255,32/255,32/255,1},
     MAINFNT = nil,
 
-    ROW = 18,
-    BIGROW = 26,
-    SINGLAYOUT={0.2,0.7,0.1},
-    DOUBLAYOUT={0.2,0.25,0.1,0.1,0.25,0.1},
+    GROUPMARGIN = 5,
+    SINGHEI = 17,
+    DOUBHEI = 26,
+    SLIDERLAYOUT={0.2,0.7,0.1},
+    PROPLAYOUT={0.2,0.4,0.4},
     MARKRAD = 4,
 
     IMGEXT={'png','jpg'},
     TMPDIR='tmp',
-
     DEFPATH='',
 
     PBUFFER = 65536,
@@ -43,10 +43,10 @@ local SET = {
     PSIZE = 4,
     PEMIT = 2048,
     PTIME=32,
-    PSPEED=1024,
+    PSPEED=2048,
     PI = math.pi,
     PI2 = math.pi*2,
-    PQUAD=8,
+    PQUAD=16,
     PEXT='pht',
 }
 

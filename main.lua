@@ -1,6 +1,6 @@
 #!/usr/bin/env love
 -- PHOTON
--- 0.3
+-- 0.4
 -- Editor (love2d)
 
 -- main.lua
@@ -36,35 +36,31 @@ local fl = require('lib/lovfl')
 local imd = require('lib/lovimd')
 
 local set = require('editor/set')
+local ui = require('editor/ui')
 
--- 0.4
--- mark setup with color or hot reload sign
--- separate ui
--- separate code generate func
+-- 0.5
+-- move code
 -- pause stop start reset count
--- check min max
 
 -- many systems pick different and emit or edit them
 -- add info about systems (buf x,y,count)
+-- separate code generate func
 
 -- generate update function for created particle
 -- copy or not copy code
 
-
 -- 0.6
--- default state
--- reset sliders
+-- add colors
+-- rollback to default state
 -- import photon
-
--- 1.0
--- crossplatform
 
 local PS = {particles={}, count = 0,systems = 0,drag=false}
 PS.forms={'circle','ellipse','triangle','rectangle','hexagon','star'}
 PS.imgdata={}
 PS.hotset={value=false}
 PS.codeState=false
-PS.photonname = nil
+PS.code={value=''}
+PS.name=''
 PS.set={
         x=set.VIEWWID/2,y=set.VIEWHEI/2,
         mode={value='top'},
@@ -78,8 +74,11 @@ PS.set={
         rate={value=512},
         areaForm={value='borderellipse'},areaX={value=96},areaY={value=96},
         areaAng={value=0},areaDir={value=true},
-        sizeStart={value=0.5},sizeFinal={value=1},sizeVar={value=1},
         timeMin={value=0.5},timeMax={value=3},
+        size1={value=0},size2={value=0.2},size3={value=0.4},
+        size4={value=0.6},size5={value=0.8},size6={value=1},
+        size7={value=1},size8={value=1},
+        sizeVar={value=1},
         speedMin={value=8},speedMax={value=32},
         dampMin={value=0.5},dampMax={value=1},
         accXMin={value=0},accXMax={value=0},
@@ -90,11 +89,10 @@ PS.set={
         spinMin={value=0},spinMax={value=0},spinVar={value=1},
         rotateMin={value=0},rotateMax={value=0},
         relative={value=true},
-        code={value=''}
     }
 
 function PS.generate()
-    PS.photonname = PS.photonName()
+    PS.setName()
     local clr = {}
     for i=1, #PS.set.color do
         for j=1, #PS.set.color[i] do clr[#clr+1] = PS.set.color[i][j] end
@@ -120,9 +118,10 @@ local function photon()
     ph:setColors(]]..table.concat(clr,',')..[[)
     ph:setEmissionRate(]]..PS.set.rate.value..[[)
     ph:setEmissionArea(']]..PS.set.areaForm.value..[[',]]..PS.set.areaX.value..[[,]]..PS.set.areaY.value..[[,]]..PS.set.areaAng.value..[[,]]..tostring(PS.set.areaDir.value)..[[)
-    ph:setSizes(]]..PS.set.sizeStart.value..[[,]]..PS.set.sizeFinal.value..[[)
-    ph:setSizeVariation(]]..PS.set.sizeVar.value..[[)
     ph:setParticleLifetime(]]..PS.set.timeMin.value..[[,]]..PS.set.timeMax.value..[[)
+    ph:setSizes(]]..PS.set.size1.value..[[,]]..PS.set.size2.value..[[,]]..PS.set.size3.value..[[,]]..PS.set.size4.value..[[,]]..PS.set.size5.value..[[,]]..PS.set.size6.value..[[,]]..PS.set.size7.value..[[,]]..PS.set.size8.value..[[)
+    ph:setSizeVariation(]]..PS.set.sizeVar.value..[[)
+
     ph:setSpeed(]]..PS.set.speedMin.value..[[,]]..PS.set.speedMax.value..[[)
     ph:setLinearAcceleration(]]..PS.set.accXMin.value..[[,]]..PS.set.accYMin.value..[[,]]..PS.set.accXMax.value..[[,]]..PS.set.accYMax.value..[[)
     ph:setRadialAcceleration(]]..PS.set.radAccMin.value..[[,]]..PS.set.radAccMax.value..[[)
@@ -164,28 +163,32 @@ function PS.loadImd()
 end
 
 function PS.saveImd()
-    local imgname = PS.photonname..'/'..PS.pathImd()
+    local imgname = PS.name..'/'..PS.pathImd()
     PS.getImageData():encode('png',imgname)
 end
 
-function PS.pathImd()
-    return PS.photonname..'.png'
+function PS.removeImd()
+    fl.removeAll(set.TMPDIR,true)
 end
 
-function PS.photonName()
+function PS.pathImd()
+    return PS.name..'.png'
+end
+
+function PS.setName()
     if PS.set.imgdata.value=='none' then
-        return PS.set.form.value..os.time()
+        PS.name = PS.set.form.value..os.time()
     else
-        return PS.set.imgdata.value..os.time()
+        PS.name = PS.set.imgdata.value..os.time()
     end
 end
 
 function PS.export()
-    if #PS.set.code.value>0 then
-        love.filesystem.createDirectory(PS.photonname)
-        local phtname = PS.photonname..'/'..PS.photonname..'.'..set.PEXT
+    if #PS.code.value>0 then
+        love.filesystem.createDirectory(PS.name)
+        local phtname = PS.name..'/'..PS.name..'.'..set.PEXT
         PS.saveImd()
-        fl.saveLove(phtname,PS.set.code.value,true)
+        fl.saveLove(phtname,PS.code.value,true)
     end
 end
 
@@ -197,10 +200,6 @@ function PS.drop(file)
     local path = fl.copyLove(file,set.TMPDIR)
     PS.set.loadpath.value = set.TMPDIR..'/'..fl.name(path)
     PS.loadImd()
-end
-
-function PS.clearDir()
-    fl.removeAll(set.TMPDIR,true)
 end
 
 function PS.buffer()
@@ -223,7 +222,7 @@ function PS.lifetime()
     end
 end
 
-function PS.clearParticles()
+function PS.clear()
     for particle in pairs(PS.particles) do
         particle:reset()
         PS.particles[particle]=nil
@@ -252,7 +251,9 @@ function PS.setup(particle)
             PS.set.areaAng.value,PS.set.areaDir.value
         )
 
-    particle:setSizes(PS.set.sizeStart.value,PS.set.sizeFinal.value)
+    particle:setSizes(PS.set.size1.value,PS.set.size2.value,PS.set.size3.value,
+                PS.set.size4.value,PS.set.size5.value,PS.set.size6.
+                value,PS.set.size7.value,PS.set.size8.value)
     particle:setSizeVariation(PS.set.sizeVar.value)
 
     particle:setParticleLifetime(PS.set.timeMin.value,
@@ -281,7 +282,7 @@ function PS.setup(particle)
 
     particle:setRelativeRotation(PS.set.relative.value)
 
-    PS.set.code.value=PS.generate()
+    PS.code.value=PS.generate()
 end
 
 function PS.getQuads()
@@ -332,278 +333,7 @@ function love.update(dt)
                             PS.systems, PS.count)
     love.window.setTitle(title)
 
-    nk:frameBegin()
-    if nk:windowBegin('Code', 0, set.MIDHEI, set.CODEWID, set.CODEHEI,
-            'border', 'title', 'movable','minimizable','scrollbar') then
-        local _,_,_,hei = nk:windowGetContentRegion()
-        nk:layoutRow('dynamic', hei-8, 1)
-        if nk:widgetIsHovered() then
-            nk:tooltip('Right Click To Copy')
-        end
-        PS.codeState = nk:edit('box', PS.set.code)
-    end
-    nk:windowEnd()
-
-    if nk:windowBegin('Editor', set.MIDWID, 0, set.EDWID, set.EDHEI,
-            'border', 'title', 'movable','minimizable') then
-
-        nk:layoutRow('dynamic',set.BIGROW, 5)
-        if nk:button('New') then PS.new() end
-        if nk:button('Import') then PS.import() end
-        if nk:button('Export') then PS.export() end
-        if nk:button('Setup') then PS.hotset.value = not PS.hotset.value end
-        if nk:button('Clear') then PS.clearParticles() end
-
-        nk:layoutRow('dynamic',set.ROW, 4)
-        nk:label('Mode')
-        nk:radio('top',PS.set.mode)
-        nk:radio('bottom',PS.set.mode)
-        nk:radio('random',PS.set.mode)
-
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        if nk:button('Buffer') then
-            PS.buffer()
-        end
-        nk:slider(0, PS.set.buffer, set.PBUFFER, 1)
-        nk:label(PS.set.buffer.value)
-
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        if nk:button('Emit') then
-            PS.emit()
-        end
-        nk:slider(1, PS.set.emit, set.PEMIT, 1)
-        nk:label(PS.set.emit.value)
-
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        if nk:button('Lifetime') then
-            PS.lifetime()
-        end
-        nk:slider(-1, PS.set.lifetime, set.PTIME,1)
-        nk:label(PS.set.lifetime.value)
-
-        nk:layoutRow('dynamic', set.BIGROW,{0.2,0.3,0.3,0.2})
-        if nk:button('Load') then
-            PS.loadImd()
-        end
-        nk:edit('field',PS.set.loadpath)
-        if nk:comboboxBegin('Select') then
-            nk:layoutRow('dynamic', set.ROW,1)
-            nk:radio('none',PS.set.imgdata)
-            for k,_ in pairs(PS.imgdata) do
-                nk:layoutRow('dynamic', set.ROW,1)
-                nk:radio(k,PS.set.imgdata)
-            end
-            nk:comboboxEnd()
-        end
-        nk:label(PS.set.imgdata.value,'centered')
-
-        local imageData = PS.imgdata[PS.set.imgdata.value]
-        local imdwid,imdhei
-        if imageData then
-            imdwid,imdhei=imageData:getDimensions()
-        end
-
-        nk:layoutRow('dynamic',set.ROW, set.DOUBLAYOUT)
-        nk:label('Quads Cols')
-        nk:slider(1, PS.set.qCols, set.PQUAD, 1)
-        nk:label(PS.set.qCols.value)
-        nk:label('Rows')
-        nk:slider(1, PS.set.qRows, set.PQUAD, 1)
-        nk:label(PS.set.qRows.value)
-
-        nk:layoutRow('dynamic', set.ROW,{0.14,0.16,0.18,0.20,0.19,0.13})
-        for i=1,#PS.forms do
-             nk:radio(PS.forms[i], PS.set.form)
-        end
-
-        local oldwid, oldhei
-        oldwid = PS.set.wid.value
-        oldhei = PS.set.hei.value
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        nk:label('Width')
-        nk:slider(0, PS.set.wid, set.PWH, 1)
-        nk:label(PS.round(PS.set.wid.value))
-
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        nk:label('Height')
-        nk:slider(0, PS.set.hei, set.PWH, 1)
-        nk:label(PS.round(PS.set.hei.value))
-
-        if imageData then
-            PS.set.wid.value=imdwid/PS.set.qCols.value
-            PS.set.hei.value=imdhei/PS.set.qRows.value
-        end
-
-        if oldwid~=PS.set.wid.value then
-            PS.set.offsetX.value = PS.set.wid.value/2
-        end
-        if oldhei~=PS.set.hei.value then
-            PS.set.offsetY.value = PS.set.hei.value/2
-        end
-        nk:layoutRow('dynamic',set.ROW,set.DOUBLAYOUT)
-        nk:label('Offset X')
-        nk:slider(0, PS.set.offsetX, PS.set.wid.value, 1)
-        nk:label(PS.round(PS.set.offsetX.value))
-        nk:label('Offset Y')
-        nk:slider(0, PS.set.offsetY,PS.set.hei.value,1)
-        nk:label(PS.round(PS.set.offsetY.value))
-
-        local colors = #PS.set.color
-        nk:layoutRow('dynamic', set.BIGROW, colors)
-        for i=1,colors do
-            local clr = PS.set.color[i]
-            local color = nuklear.colorRGBA(clr[1]*255,clr[2]*255,
-                                            clr[3]*255,clr[4]*255)
-            if nk:comboboxBegin(nil, color) then
-                local rgba = {'R',clr[1],'G',clr[2],'B',clr[3],'A',clr[4]}
-
-                for j=1, #rgba,2 do
-                    nk:layoutRow('dynamic',set.ROW, {0.1,0.7,0.2})
-                    nk:label(rgba[j])
-                    rgba[j+1] = PS.round(nk:slider(0, rgba[j+1], 1, 0.01),3)
-                    nk:label(rgba[j+1])
-                end
-                PS.set.color[i]={rgba[2],rgba[4],rgba[6],rgba[8]}
-                nk:comboboxEnd()
-            end
-        end
-
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        nk:label('Rate')
-        nk:slider(0, PS.set.rate, set.PEMIT, 1)
-        nk:label(PS.set.rate.value)
-
-        nk:layoutRow('dynamic',set.ROW, 4)
-        nk:checkbox('outside', PS.set.areaDir)
-        nk:radio('none',PS.set.areaForm)
-        nk:radio('uniform',PS.set.areaForm)
-        nk:radio('normal',PS.set.areaForm)
-        nk:layoutRow('dynamic',set.ROW, 3)
-        nk:radio('ellipse',PS.set.areaForm)
-        nk:radio('borderellipse',PS.set.areaForm)
-        nk:radio('borderrectangle',PS.set.areaForm)
-
-        nk:layoutRow('dynamic',set.ROW,set.DOUBLAYOUT)
-        nk:label('Emit Area X')
-        nk:slider(0, PS.set.areaX, set.VIEWWID/2, 1)
-        nk:label(PS.set.areaX.value)
-        nk:label('Y')
-        nk:slider(0, PS.set.areaY, set.VIEWWID/2, 1)
-        nk:label(PS.set.areaY.value)
-
-        nk:layoutRow('dynamic',set.ROW,set.SINGLAYOUT)
-        nk:label('Emit Angle')
-        nk:slider(0, PS.set.areaAng, set.PI2, 0.01)
-        nk:label(PS.round(PS.set.areaAng.value))
-
-        nk:layoutRow('dynamic',set.ROW,set.DOUBLAYOUT)
-        nk:label('Size Start')
-        nk:slider(0, PS.set.sizeStart, set.PSIZE, 0.01)
-        nk:label(PS.round(PS.set.sizeStart.value))
-        nk:label('Final')
-        nk:slider(0, PS.set.sizeFinal, set.PSIZE, 0.01)
-        nk:label(PS.round(PS.set.sizeFinal.value))
-
-        nk:layoutRow('dynamic',set.ROW,set.SINGLAYOUT)
-        nk:label('Size Var')
-        nk:slider(0, PS.set.sizeVar, 1, 0.01)
-        nk:label(PS.round(PS.set.sizeVar.value))
-
-        nk:layoutRow('dynamic',set.ROW,set.DOUBLAYOUT)
-        nk:label('Time Min')
-        nk:slider(0, PS.set.timeMin, PS.set.timeMax.value, 0.1)
-        nk:label(PS.round(PS.set.timeMin.value))
-        nk:label('Max')
-        nk:slider(PS.set.timeMin.value, PS.set.timeMax, set.PTIME, 0.1)
-        nk:label(PS.round(PS.set.timeMax.value))
-
-        nk:layoutRow('dynamic',set.ROW,set.SINGLAYOUT)
-        nk:label('Speed Min')
-        nk:slider(0, PS.set.speedMin, set.PSPEED, 1)
-        nk:label(PS.set.speedMin.value)
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        nk:label('Speed Max')
-        nk:slider(PS.set.speedMin.value, PS.set.speedMax,set.PSPEED,1)
-        nk:label(PS.set.speedMax.value)
-
-        nk:layoutRow('dynamic',set.ROW,set.SINGLAYOUT)
-        nk:label('Acc X Min')
-        nk:slider(-set.PSPEED, PS.set.accXMin, set.PSPEED, 1)
-        nk:label(PS.set.accXMin.value)
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        nk:label('Acc X Max')
-        nk:slider(PS.set.accXMin.value, PS.set.accXMax,set.PSPEED,1)
-        nk:label(PS.set.accXMax.value)
-
-        nk:layoutRow('dynamic',set.ROW,set.SINGLAYOUT)
-        nk:label('Acc Y Min')
-        nk:slider(-set.PSPEED, PS.set.accYMin, set.PSPEED, 1)
-        nk:label(PS.set.accYMin.value)
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        nk:label('Acc Y Max')
-        nk:slider(PS.set.accYMin.value, PS.set.accYMax,set.PSPEED,1)
-        nk:label(PS.set.accYMax.value)
-
-        nk:layoutRow('dynamic',set.ROW,set.SINGLAYOUT)
-        nk:label('Rad Acc Min')
-        nk:slider(-set.PSPEED, PS.set.radAccMin, set.PSPEED, 1)
-        nk:label(PS.set.radAccMin.value)
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        nk:label('Rad Acc Max')
-        nk:slider(PS.set.radAccMin.value, PS.set.radAccMax,set.PSPEED,1)
-        nk:label(PS.set.radAccMax.value)
-
-        nk:layoutRow('dynamic',set.ROW,set.SINGLAYOUT)
-        nk:label('Tan Acc Min')
-        nk:slider(-set.PSPEED, PS.set.tanAccMin, set.PSPEED, 1)
-        nk:label(PS.set.tanAccMin.value)
-        nk:layoutRow('dynamic',set.ROW, set.SINGLAYOUT)
-        nk:label('Tan Acc Max')
-        nk:slider(PS.set.tanAccMin.value, PS.set.tanAccMax,set.PSPEED,1)
-        nk:label(PS.set.tanAccMax.value)
-
-        nk:layoutRow('dynamic',set.ROW,set.DOUBLAYOUT)
-        nk:label('Damp Min')
-        nk:slider(0, PS.set.dampMin, PS.set.dampMax.value, 0.01)
-        nk:label(PS.round(PS.set.dampMin.value))
-        nk:label('Max')
-        nk:slider(PS.set.dampMin.value, PS.set.dampMax, 1, 0.01)
-        nk:label(PS.round(PS.set.dampMax.value))
-
-        nk:layoutRow('dynamic',set.ROW, set.DOUBLAYOUT)
-        nk:label('Direction')
-        nk:slider(0, PS.set.dir, set.PI2, 0.01)
-        nk:label(PS.round(PS.set.dir.value))
-        nk:label('Spread')
-        nk:slider(0, PS.set.spread, set.PI2, 0.01)
-        nk:label(PS.round(PS.set.spread.value))
-
-        nk:layoutRow('dynamic',set.ROW,set.DOUBLAYOUT)
-        nk:label('Spin Min')
-        nk:slider(-set.PI, PS.set.spinMin, set.PI, 0.01)
-        nk:label(PS.round(PS.set.spinMin.value))
-        nk:label('Max')
-        nk:slider(PS.set.spinMin.value, PS.set.spinMax,set.PI,0.01)
-        nk:label(PS.round(PS.set.spinMax.value))
-
-        nk:layoutRow('dynamic',set.ROW,set.SINGLAYOUT)
-        nk:label('Spin Var')
-        nk:slider(0, PS.set.spinVar, 1, 0.01)
-        nk:label(PS.round(PS.set.spinVar.value))
-
-        nk:layoutRow('dynamic',set.ROW,set.DOUBLAYOUT)
-        nk:label('Rotate Min')
-        nk:slider(0, PS.set.rotateMin, set.PI2, 0.01)
-        nk:label(PS.round(PS.set.rotateMin.value))
-        nk:label('Max')
-        nk:slider(PS.set.rotateMin.value, PS.set.rotateMax,set.PI2,0.01)
-        nk:label(PS.round(PS.set.rotateMax.value))
-
-        nk:layoutRow('dynamic',set.ROW,1)
-        nk:selectable('RelativeRotation', PS.set.relative)
-    end
-    nk:windowEnd()
-    nk:frameEnd()
+    ui.editor(nk,PS)
 
     PS.count=0
     PS.systems=0
@@ -655,7 +385,7 @@ function love.mousepressed(x, y, button, istouch)
     end
     if button==2 then
         if PS.codeState=='active' then
-            love.system.setClipboardText(PS.set.code.value)
+            love.system.setClipboardText(PS.code.value)
         end
     end
 end
@@ -676,15 +406,11 @@ function love.mousemoved(x, y, dx, dy, istouch)
     end
 end
 
-function love.wheelmoved(x, y)
-    nk:wheelmoved(x, y)
-end
+function love.wheelmoved(x, y) nk:wheelmoved(x, y) end
 
-function love.textinput(text)
-    nk:textinput(text)
-end
+function love.textinput(text) nk:textinput(text) end
 
 function love.quit()
-    PS.clearDir()
+    PS.removeImd()
     print(set.VER, set.APPNAME, 'Editor (love2d)', 'quit')
 end
