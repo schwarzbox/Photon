@@ -1,6 +1,6 @@
 #!/usr/bin/env love
 -- PHOTON
--- 0.4
+-- 0.47
 -- Editor (love2d)
 
 -- main.lua
@@ -41,13 +41,16 @@ local PH = require('editor/ph')
 -- 0.5
 -- add info about systems (buf x,y,count)
 -- generate update function for created particle?
+-- user defined name for particle
 -- imporve selection images and forms
 
 -- 0.6
--- ui colors
--- better usability and move place two born
+-- ui colors (delete snd setup marks)
+-- better usability and allow move place to born
 -- show/hide marks
+
 -- import func
+-- import predefined by drop or by load
 
 local PS = {
         count = 0,
@@ -56,16 +59,60 @@ local PS = {
         loadpath={value=''},
         systems={value=1,items={'0'}},
         hotset={value=true},
-        codeState=false,
+        codestate=false,
         drag = false,
         x=set.VIEWWID/2,y=set.VIEWHEI/2
     }
 
-function PS.new()
-    local photon = PH:new{PS=PS,id=#PS.photons+1}
+function PS.new(cln)
+    local id = 1
+    local phid = {}
+    for i=1, #PS.photons do
+        phid[i]=PS.photons[i].id
+    end
+    table.sort(phid)
+    while phid[id]==id do
+        id=id+1
+    end
+
+    local clone
+    if cln then clone=cln end
+    local photon = PH:new{PS=PS,id=id,set=clone}
     PS.photons[#PS.photons+1]=photon
-    PS.systems.items[#PS.photons]=tostring(#PS.photons)
+    PS.systems.items[#PS.photons]=tostring(id)
     PS.systems.value=#PS.photons
+end
+
+function PS.clone()
+    local photon = PS.photons[PS.systems.value]
+    PS.new(photon.set)
+end
+
+function PS.export()
+    local photon = PS.photons[PS.systems.value]
+    if #photon.code.value>0 then
+        love.filesystem.createDirectory(photon.name)
+        local phtname = photon.name..'/'..photon.name..'.'..set.PEXT
+        photon:saveImd()
+        fl.saveLove(phtname,photon.code.value,true)
+    end
+end
+
+function PS.import() end
+
+
+function PS.delete()
+    local photon = PS.photons[PS.systems.value]
+    if #PS.photons>0 and photon then
+        photon.particle:reset()
+        table.remove(PS.photons,PS.systems.value)
+        table.remove(PS.systems.items,PS.systems.value)
+    end
+    if #PS.photons>0 then
+        PS.systems.value=#PS.photons
+    else
+        PS.systems={value=1,items={'0'}}
+    end
 end
 
 function PS.loadImd()
@@ -82,14 +129,6 @@ function PS.dropImd(file)
     local path = fl.copyLove(file,set.TMPDIR)
     PS.loadpath.value = set.TMPDIR..'/'..fl.name(path)
     PS.loadImd()
-end
-
-function PS.clear()
-    for i=#PS.photons, 1,-1 do
-        PS.systems={value=1,items={'0'}}
-        PS.photons[i].particle:reset()
-        PS.photons[i]=nil
-    end
 end
 
 local nk
@@ -116,9 +155,7 @@ function love.update(dt)
         PS.photons[PS.systems.value]:setup()
     end
     for i=1, #PS.photons do
-        if not PS.photons[i].particle:isPaused() then
-            PS.photons[i].particle:update(dt)
-        end
+        PS.photons[i]:update(dt)
         PS.count=PS.count+PS.photons[i].particle:getCount()
     end
 end
@@ -157,7 +194,7 @@ function love.mousepressed(x, y, button, istouch)
         end
     end
     if button==2 then
-        if PS.codeState=='active' then
+        if PS.codestate=='active' then
             love.system.setClipboardText(
                     PS.photons[PS.systems.value].code.value)
         end

@@ -4,23 +4,25 @@ Particle Editor for Love2d.
 
 WIP
 
-v0.45
+v0.47
 
 ![Screenshot](screenshot/screenshot1.jpg)
 
 'New' - create new particle system.
 
+'Clone' - clone current system
+
 'Import' - not yet implemented.
 
 'Export' - save code & image in separate folder for use with Love2d.
 
-'Clear' - remove all particle systems.
+'Delete' - delete particle system.
 
 New systems immediately emit particles. If you press 'Pause' system just stop update iternal state. If you press 'Stop' system finish produce particles but continue update state, even if all particles disappear. If you press 'Start' current system continue emission or start it again.
 
 'Reset' - delete all particles, reset values for buffer and lifetime counter.
 
-'Setup' - default hot-reload for edit existing particle system.
+'Setup' - edit current particle system.
 
 # Buffer & Lifetime
 

@@ -24,7 +24,7 @@ function UI.editor(nk,PS)
             if nk:widgetIsHovered() then
                 nk:tooltip('Right Click To Copy')
             end
-            PS.codeState = nk:edit('box', PH.code)
+            PS.codestate = nk:edit('box', PH.code)
         end
     end
     nk:windowEnd()
@@ -34,11 +34,13 @@ function UI.editor(nk,PS)
 
         nk:layoutRow('dynamic',set.DOUBHEI + set.GROUPMARGIN * 2, 1)
         nk:groupBegin('Menu','border')
-            nk:layoutRow('dynamic',set.DOUBHEI, 4)
+            nk:layoutRow('dynamic',set.DOUBHEI, 6)
             if nk:button('New') then PS.new() end
-            if nk:button('Import') and PH then PH:import() end
-            if nk:button('Export') and PH then  PH:export() end
-            if nk:button('Clear') and PH then PS.clear() end
+            if nk:button('Clone') and PH then PS.clone() end
+            if nk:button('Import') and PH then PS.import() end
+            if nk:button('Export') and PH then  PS.export() end
+            nk:spacing(1)
+            if nk:button('Delete') and PH then PS.delete() end
         nk:groupEnd()
 
 

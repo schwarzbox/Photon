@@ -175,28 +175,28 @@ function IMD.crop(imgdata,x1,y1,x2,y2)
     return data
 end
 
-function IMD.quads(imgdata,tilex,tiley,numx,numy)
+function IMD.quads(imgdata,wid,hei,cols,rows)
     local quads = {}
     local sx, sy = imgdata:getDimensions()
-    for y=0,numy-1 do
-        for x=0,numx-1 do
+    for y=0,rows-1 do
+        for x=0,cols-1 do
             quads[#quads+1]=love.graphics.newQuad(
-                    tilex*x,tiley*y,tilex,tiley,sx,sy)
+                    wid*x,hei*y,wid,hei,sx,sy)
         end
     end
     return quads
 end
 
-function IMD.slice(imgdata,tilex,tiley,numx,numy)
-    numx = numx or 1
-    numy = numy or 1
+function IMD.slice(imgdata,wid,hei,cols,rows)
+    cols = cols or 1
+    rows = rows or 1
     local sx, sy = imgdata:getDimensions()
     local arr = {}
-    for y=0,numy-1 do
-        for x=0,numx-1 do
-            local data = love.image.newImageData(tilex,tiley)
+    for y=0,rows-1 do
+        for x=0,cols-1 do
+            local data = love.image.newImageData(wid,hei)
             -- source, destx, desty, sourcex, sourcey, source wid, source hei
-            data:paste(imgdata,0,0,x*tilex, y*tiley,sx,sy)
+            data:paste(imgdata,0,0,x*wid, y*hei,sx,sy)
             arr[#arr+1] = data
         end
     end
