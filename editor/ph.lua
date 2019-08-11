@@ -13,13 +13,13 @@ local imd = require('lib/lovimd')
 local set = require('editor/set')
 
 local PH = {}
+PH.count=0
 PH.forms={'circle','ellipse','triangle','rectangle','hexagon','star'}
 PH.code={value=''}
 PH.name=''
 PH.set={
         emit={value=1},
         mode={value='top'},buffer={value=256},lifetime={value=-1},
-        imgdata={value='none'},
         qCols={value=1},qRows={value=1},
         form={value='circle'},
         wid={value=8},hei={value=8},offsetX={value=4},offsetY={value=4},
@@ -28,7 +28,7 @@ PH.set={
         rate={value=1},
         areaForm={value='none'},areaX={value=0},areaY={value=0},
         areaAng={value=0},areaDir={value=false},
-        timeMin={value=0.5},timeMax={value=1},
+        timeMin={value=1},timeMax={value=1},
         size1={value=0},size2={value=0.3},size3={value=0.6},
         size4={value=0.9},size5={value=1},size6={value=0.6},
         size7={value=0.3},size8={value=0},
@@ -82,15 +82,11 @@ function PH:pathImd()
 end
 
 function PH:setName()
-    if self.set.imgdata.value=='none' then
-        self.name = self.set.form.value..os.time()
-    else
-        self.name = self.set.imgdata.value..os.time()
-    end
+    self.name = self.set.form.value..os.time()
 end
 
 function PH:getQuads()
-    local imageData = self.PS.imgbase[self.set.imgdata.value]
+    local imageData = self.PS.imgbase[self.set.form.value]
     if not imageData then return end
     local sx, sy = imageData:getDimensions()
     return imd.quads(imageData,
@@ -100,7 +96,7 @@ end
 
 function PH:getImageData()
     local texture
-    local imageData = self.PS.imgbase[self.set.imgdata.value]
+    local imageData = self.PS.imgbase[self.set.form.value]
     if imageData then
         texture = imageData
     else
@@ -127,7 +123,7 @@ function PH:setup()
     self.particle:setInsertMode(self.set.mode.value)
 
     self.particle:setTexture(love.graphics.newImage(self:getImageData()))
-    if self.set.imgdata~='none' then
+    if not self.forms[self.set.form] then
         self.particle:setQuads(self:getQuads())
     end
 
@@ -200,7 +196,7 @@ local function photon()
     local ph = love.graphics.newParticleSystem(tx,]]..self.set.buffer.value..[[)
     ph:setEmitterLifetime(]]..self.set.lifetime.value..[[)
     ph:setInsertMode(']]..self.set.mode.value..[[')
-    if ]]..tostring(self.set.imgdata.value~='none')..[[ then
+    if ]]..tostring(not self.forms[self.set.form.value])..[[ then
         ph:setQuads(unpack(quads(imd,]]..self.set.qCols.value..[[,]]..self.set.qRows.value..[[)))
     end
     ph:setOffset(]]..self.set.offsetX.value..[[,]]..self.set.offsetY.value..[[)
@@ -239,20 +235,6 @@ end
 return photon()
 ]]
     return code
-end
-
-function PH:update(dt)
-    if not self.particle:isPaused() then
-        self.particle:update(dt)
-    end
-end
-
-function PH:draw()
-    love.graphics.draw(self.particle)
-    local x,y=self.particle:getPosition()
-    love.graphics.circle('line',x,y,set.MARKRAD)
-
-    love.graphics.print(self.id,x+set.MARKRAD,y+set.MARKRAD)
 end
 
 return PH

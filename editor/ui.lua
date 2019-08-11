@@ -34,36 +34,38 @@ function UI.editor(nk,PS)
 
         nk:layoutRow('dynamic',set.DOUBHEI + set.GROUPMARGIN * 2, 1)
         nk:groupBegin('Menu','border')
-            nk:layoutRow('dynamic',set.DOUBHEI, 6)
+            nk:layoutRow('dynamic',set.DOUBHEI, 5)
             if nk:button('New') then PS.new() end
-            if nk:button('Clone') and PH then PS.clone() end
-            if nk:button('Import') and PH then PS.import() end
-            if nk:button('Export') and PH then  PS.export() end
-            nk:spacing(1)
+            if nk:button('Clone') then PS.clone() end
+            if nk:button('Import') then PS.import() end
+            if nk:button('Export') then  PS.export() end
             if nk:button('Delete') and PH then PS.delete() end
-        nk:groupEnd()
-
-
-        nk:layoutRow('dynamic',set.SINGHEI + set.GROUPMARGIN * 2, 1)
-        nk:groupBegin('Control','border')
-            nk:layoutRow('dynamic',set.SINGHEI, 6)
-            if nk:button('Start') and PH then PH:start() end
-            if nk:button('Pause') and PH then PH:pause() end
-            if nk:button('Stop') and PH then  PH:stop() end
-            if nk:button('Reset') and PH then PH:reset() end
-            nk:selectable('Setup',nil,'centered',PS.hotset)
-            nk:combobox(PS.systems,PS.systems.items)
         nk:groupEnd()
 
     if PH then
         nk:layoutRow('dynamic',set.SINGHEI + set.GROUPMARGIN * 2, 1)
+        nk:groupBegin('Control','border')
+            nk:layoutRow('dynamic',set.SINGHEI, 7)
+            if nk:button('Start') then PH:start() end
+            if nk:button('Pause') then PH:pause() end
+            if nk:button('Stop') then  PH:stop() end
+            if nk:button('Reset') then PH:reset() end
+            nk:selectable('Setup',nil,'centered',PS.hotset)
+            nk:combobox(PS.systems,PS.systems.items)
+            nk:selectable('Marks', nil, 'centered',PS.marks)
+        nk:groupEnd()
+
+        nk:layoutRow('dynamic',set.SINGHEI + set.GROUPMARGIN * 2, 1)
         nk:groupBegin('Emit','border')
-            nk:layoutRow('dynamic',set.SINGHEI, {0.2,0.7,0.1})
+            nk:layoutRow('dynamic',set.SINGHEI, {0.2,0.5,0.1,0.05,0.15})
             if nk:button('Emit') then
                 PH:emit()
             end
             nk:slider(1, PH.set.emit, set.PEMIT, 1)
-            nk:label(PH.set.emit.value,'right')
+            nk:label(PH.set.emit.value,'left')
+            nk:label('E','right')
+            nk:label(PH.count,'right')
+
         nk:groupEnd()
 
         nk:layoutRow('dynamic',set.SINGHEI*6 + set.GROUPMARGIN * 4, 1)
@@ -89,24 +91,21 @@ function UI.editor(nk,PS)
             nk:edit('field',PS.loadpath)
             if nk:comboboxBegin('Select') then
                 nk:layoutRow('dynamic', set.SINGHEI,1)
-                nk:radio('none',PH.set.imgdata)
+                for i=1,#PH.forms do
+                    nk:radio(PH.forms[i], PH.set.form)
+                end
                 for k,_ in pairs(PS.imgbase) do
                     nk:layoutRow('dynamic', set.SINGHEI,1)
-                    nk:radio(k,PH.set.imgdata)
+                    nk:radio(k,PH.set.form)
                 end
                 nk:comboboxEnd()
             end
-            nk:label(PH.set.imgdata.value,'centered')
+            nk:label(PH.set.form.value,'centered')
 
-            nk:layoutRow('dynamic', set.SINGHEI,
-                    {0.14,0.15,0.18,0.21,0.20,0.12})
-            for i=1,#PH.forms do
-                 nk:radio(PH.forms[i], PH.set.form)
-            end
         nk:groupEnd()
 
 
-        local imageData = PS.imgbase[PH.set.imgdata.value]
+        local imageData = PS.imgbase[PH.set.form.value]
         local imdwid,imdhei
         if imageData then
             imdwid,imdhei=imageData:getDimensions()
@@ -267,6 +266,5 @@ function UI.colors(nk,PH,st,fin)
         end
     end
 end
-
 
 return UI

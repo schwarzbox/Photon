@@ -7,7 +7,7 @@ local unpack = table.unpack or unpack
 
 local SET = {
     APPNAME = love.window.getTitle(),
-    VER = '0.47',
+    VER = '0.48',
     SAVE = 'photonsave.lua',
     FULLSCR = love.window.getFullscreen(),
     WID = love.graphics.getWidth(),

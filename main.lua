@@ -1,6 +1,6 @@
 #!/usr/bin/env love
 -- PHOTON
--- 0.47
+-- 0.48
 -- Editor (love2d)
 
 -- main.lua
@@ -39,16 +39,12 @@ local ui = require('editor/ui')
 local PH = require('editor/ph')
 
 -- 0.5
--- add info about systems (buf x,y,count)
--- generate update function for created particle?
 -- user defined name for particle
--- imporve selection images and forms
+-- release mac os
 
 -- 0.6
 -- ui colors (delete snd setup marks)
--- better usability and allow move place to born
--- show/hide marks
-
+-- 8 colors
 -- import func
 -- import predefined by drop or by load
 
@@ -59,6 +55,7 @@ local PS = {
         loadpath={value=''},
         systems={value=1,items={'0'}},
         hotset={value=true},
+        marks={value=true},
         codestate=false,
         drag = false,
         x=set.VIEWWID/2,y=set.VIEWHEI/2
@@ -84,13 +81,15 @@ function PS.new(cln)
 end
 
 function PS.clone()
-    local photon = PS.photons[PS.systems.value]
-    PS.new(photon.set)
+    if #PS.photons>0 then
+        local photon = PS.photons[PS.systems.value]
+        PS.new(photon.set)
+    end
 end
 
 function PS.export()
-    local photon = PS.photons[PS.systems.value]
-    if #photon.code.value>0 then
+    if #PS.photons>0 then
+        local photon = PS.photons[PS.systems.value]
         love.filesystem.createDirectory(photon.name)
         local phtname = photon.name..'/'..photon.name..'.'..set.PEXT
         photon:saveImd()
@@ -102,8 +101,8 @@ function PS.import() end
 
 
 function PS.delete()
-    local photon = PS.photons[PS.systems.value]
-    if #PS.photons>0 and photon then
+    if #PS.photons>0 then
+        local photon = PS.photons[PS.systems.value]
         photon.particle:reset()
         table.remove(PS.photons,PS.systems.value)
         table.remove(PS.systems.items,PS.systems.value)
@@ -120,7 +119,7 @@ function PS.loadImd()
             PS.loadpath.value,unpack(set.IMGEXT))) do
         PS.imgbase[k]=love.image.newImageData(v)
         if #PS.photons>0 then
-            PS.photons[PS.systems.value].set.imgdata.value=k
+            PS.photons[PS.systems.value].set.form.value=k
         end
     end
 end
@@ -143,7 +142,7 @@ function love.load()
 end
 
 function love.update(dt)
-    local title = string.format('%s %s fps %.2d systems %d particles %d',
+    local title = string.format('%s %s fps %.2d systems %.3d particles %.5d',
                             set.APPNAME, set.VER, love.timer.getFPS(),
                             #PS.photons, PS.count)
     love.window.setTitle(title)
@@ -155,17 +154,30 @@ function love.update(dt)
         PS.photons[PS.systems.value]:setup()
     end
     for i=1, #PS.photons do
-        PS.photons[i]:update(dt)
-        PS.count=PS.count+PS.photons[i].particle:getCount()
+        local photon = PS.photons[i]
+        if not photon.particle:isPaused() then
+            photon.particle:update(dt)
+            photon.count = photon.particle:getCount()
+        end
+        PS.count=PS.count+photon.count
     end
 end
 
 function love.draw()
-    love.graphics.rectangle('line',
-            PS.x-set.MARKRAD,PS.y-set.MARKRAD,
-            set.MARKRAD*2,set.MARKRAD*2)
+    if PS.marks.value then
+        love.graphics.rectangle('line',
+                PS.x-set.MARKRAD,PS.y-set.MARKRAD,
+                set.MARKRAD*2,set.MARKRAD*2)
+    end
 
-    for i=1, #PS.photons do PS.photons[i]:draw() end
+    for i=1, #PS.photons do
+        if PS.marks.value then
+            local x,y=PS.photons[i].particle:getPosition()
+            love.graphics.circle('line',x,y,set.MARKRAD)
+            love.graphics.print(PS.photons[i].id,x+set.MARKRAD,y+set.MARKRAD)
+        end
+        love.graphics.draw(PS.photons[i].particle)
+    end
     nk:draw()
 end
 

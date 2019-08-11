@@ -4,7 +4,7 @@ Particle Editor for Love2d.
 
 WIP
 
-v0.47
+v0.48
 
 ![Screenshot](screenshot/screenshot1.jpg)
 
@@ -24,6 +24,8 @@ New systems immediately emit particles. If you press 'Pause' system just stop up
 
 'Setup' - edit current particle system.
 
+'Mark' - show and hide marks in the display.
+
 # Buffer & Lifetime
 
 You can set Buffer size and Lifetime counter when create new system. To change values you need press 'Reset' for selected system.
@@ -33,6 +35,10 @@ You can set Buffer size and Lifetime counter when create new system. To change v
 1 Provide path in source folder and press 'Load' button.
 
 2 Drag & Drop image.
+
+# Export
+
+Particle system exported with 'pht' extension. It is plain lua file which can used with 'require' or other import facilities.
 
 # Warning
 
