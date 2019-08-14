@@ -2,17 +2,13 @@
 
 Particle Editor for Love2d.
 
-WIP
-
-v0.48
+v0.55
 
 ![Screenshot](screenshot/screenshot1.jpg)
 
 'New' - create new particle system.
 
-'Clone' - clone current system
-
-'Import' - not yet implemented.
+'Clone' - clone current system.
 
 'Export' - save code & image in separate folder for use with Love2d.
 
@@ -30,20 +26,27 @@ New systems immediately emit particles. If you press 'Pause' system just stop up
 
 You can set Buffer size and Lifetime counter when create new system. To change values you need press 'Reset' for selected system.
 
-# Import image
-
-1 Provide path in source folder and press 'Load' button.
-
-2 Drag & Drop image.
-
 # Export
 
 Particle system exported with 'pht' extension. It is plain lua file which can used with 'require' or other import facilities.
 
+# Import texture
+
+Drag & Drop image. Image automatically apply for the current system.
+
+You can find imported images in the Texture section of the editor.
+
+# Import Photon file '.pht'
+
+Drag & Drop '.pht' file and editor generate default texture for your script.
+
+Drag & Drop '.pht' file together with '.png' or '.jpg' file.
+
+After editor automatically run imported particle system.
+
 # Warning
 
 Shared library nuklear.so compiled for Mac OS 64-bit.
-
 
 Made with Nuklear, Love2d and some self-made libraries on top of Love Engine.
 

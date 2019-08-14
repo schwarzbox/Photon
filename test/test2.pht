@@ -1,0 +1,50 @@
+ -- 0.5 Photon Editor (love2d)
+
+local unpack = table.unpack or unpack
+local quads
+
+local function photon(imd)
+    if not imd then
+        imd = love.image.newImageData('test2.png')
+    end
+    local tx = love.graphics.newImage(imd)
+    local ph = love.graphics.newParticleSystem(tx,32768)
+    ph:setEmitterLifetime(-1)
+    ph:setInsertMode('top')
+    if false then
+        ph:setQuads(unpack(quads(imd,1,1)))
+    end
+    ph:setOffset(98,4)
+    ph:setColors(0.5,0.5,0.5,0.5,1,1,1,0.5,1,1,1,0.5,1,1,1,0.5,1,1,1,0.5,1,1,1,0)
+    ph:setEmissionRate(512)
+    ph:setEmissionArea('borderellipse',96,96,0,true)
+    ph:setParticleLifetime(0.5,3)
+    ph:setSizes(0,0.2,0.4,0.6,0.8,1,1,1)
+    ph:setSizeVariation(1)
+    ph:setSpeed(8,32)
+    ph:setLinearAcceleration(0,0,0,0)
+    ph:setRadialAcceleration(0,0)
+    ph:setTangentialAcceleration(0,8)
+    ph:setLinearDamping(0.5,1)
+    ph:setDirection(0)
+    ph:setSpread(1)
+    ph:setSpin(0,0)
+    ph:setSpinVariation(1)
+    ph:setRotation(0,0)
+    ph:setRelativeRotation(true)
+    return ph
+end
+
+function quads(imgdata,numx,numy)
+    local q = {}
+    local iw, ih = imgdata:getDimensions()
+    local qw, qh = iw/numx, ih/numy
+    for y=0,numy-1 do
+        for x=0,numx-1 do
+            q[#q+1]=love.graphics.newQuad(
+                    qw*x,qh*y,qw,qh,iw,ih)
+        end
+    end
+    return q
+end
+return photon(...)

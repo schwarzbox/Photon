@@ -7,7 +7,7 @@ local unpack = table.unpack or unpack
 
 local SET = {
     APPNAME = love.window.getTitle(),
-    VER = '0.48',
+    VER = '0.55',
     SAVE = 'photonsave.lua',
     FULLSCR = love.window.getFullscreen(),
     WID = love.graphics.getWidth(),
@@ -34,14 +34,14 @@ local SET = {
 
     IMGEXT={'png','jpg'},
     TMPDIR='tmp',
-    DEFPATH='res/pht',
+    DEFPATH='',
 
     PBUFFER = 65536,
     PWH = 512,
     PSIZE = 8,
     PEMIT = 2048,
-    PTIME=64,
-    PSPEED=2048,
+    PTIME = 64,
+    PSPEED = 2048,
     PI = math.pi,
     PI2 = math.pi*2,
     PQUAD=16,

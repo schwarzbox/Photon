@@ -1,6 +1,6 @@
 #!/usr/bin/env love
 -- PHOTON
--- 0.48
+-- 0.55
 -- Editor (love2d)
 
 -- main.lua
@@ -38,27 +38,22 @@ local set = require('editor/set')
 local ui = require('editor/ui')
 local PH = require('editor/ph')
 
--- 0.5
--- user defined name for particle
--- release mac os
-
 -- 0.6
--- ui colors (delete snd setup marks)
+-- ui colors (delete,setup, marks)
+-- release mac os
 -- 8 colors
--- import func
--- import predefined by drop or by load
 
 local PS = {
         count = 0,
         photons = {},
-        imgbase={},
-        loadpath={value=''},
-        systems={value=1,items={'0'}},
-        hotset={value=true},
-        marks={value=true},
-        codestate=false,
+        imgbase = {},
+        loadpath = '',
+        systems = {value=1,items={'0'}},
+        hotset = {value=true},
+        marks = {value=true},
+        codestate = false,
         drag = false,
-        x=set.VIEWWID/2,y=set.VIEWHEI/2
+        x = set.VIEWWID/2,y = set.VIEWHEI/2
     }
 
 function PS.new(cln)
@@ -68,16 +63,16 @@ function PS.new(cln)
         phid[i]=PS.photons[i].id
     end
     table.sort(phid)
-    while phid[id]==id do
+    while phid[id] == id do
         id=id+1
     end
 
     local clone
     if cln then clone=cln end
     local photon = PH:new{PS=PS,id=id,set=clone}
-    PS.photons[#PS.photons+1]=photon
-    PS.systems.items[#PS.photons]=tostring(id)
-    PS.systems.value=#PS.photons
+    PS.photons[#PS.photons+1] = photon
+    PS.systems.items[#PS.photons] = tostring(id)
+    PS.systems.value = #PS.photons
 end
 
 function PS.clone()
@@ -97,9 +92,6 @@ function PS.export()
     end
 end
 
-function PS.import() end
-
-
 function PS.delete()
     if #PS.photons>0 then
         local photon = PS.photons[PS.systems.value]
@@ -108,26 +100,41 @@ function PS.delete()
         table.remove(PS.systems.items,PS.systems.value)
     end
     if #PS.photons>0 then
-        PS.systems.value=#PS.photons
+        PS.systems.value = #PS.photons
     else
-        PS.systems={value=1,items={'0'}}
+        PS.systems = {value=1,items={'0'}}
     end
 end
 
 function PS.loadImd()
-    for k,v in pairs(fl.loadPath(
-            PS.loadpath.value,unpack(set.IMGEXT))) do
-        PS.imgbase[k]=love.image.newImageData(v)
+    for k,v in pairs(fl.loadPath(PS.loadpath,unpack(set.IMGEXT))) do
+        PS.imgbase[k] = love.image.newImageData(v)
         if #PS.photons>0 then
-            PS.photons[PS.systems.value].set.form.value=k
+            local photon = PS.photons[PS.systems.value]
+            photon.set.form.value = k
+            photon:setImageData()
         end
     end
 end
 
-function PS.dropImd(file)
+function PS.loadPht()
+    PS.new()
+    if #PS.photons>0 then
+        local photon = PS.photons[PS.systems.value]
+        photon:import(love.filesystem.load(PS.loadpath)(photon.imagedata))
+    end
+end
+
+
+function PS.dropFile(file)
     local path = fl.copyLove(file,set.TMPDIR)
-    PS.loadpath.value = set.TMPDIR..'/'..fl.name(path)
-    PS.loadImd()
+    PS.loadpath = set.TMPDIR..'/'..fl.name(path)
+    if fl.ext(path) == 'pht' then
+        PS.loadPht()
+    else
+        PS.loadImd()
+    end
+    PS.loadpath = ''
 end
 
 local nk
@@ -148,8 +155,7 @@ function love.update(dt)
     love.window.setTitle(title)
 
     ui.editor(nk,PS)
-
-    PS.count=0
+    PS.count = 0
     if #PS.photons>0 and PS.hotset.value then
         PS.photons[PS.systems.value]:setup()
     end
@@ -159,20 +165,19 @@ function love.update(dt)
             photon.particle:update(dt)
             photon.count = photon.particle:getCount()
         end
-        PS.count=PS.count+photon.count
+        PS.count = PS.count+photon.count
     end
 end
 
 function love.draw()
     if PS.marks.value then
         love.graphics.rectangle('line',
-                PS.x-set.MARKRAD,PS.y-set.MARKRAD,
-                set.MARKRAD*2,set.MARKRAD*2)
+                PS.x-set.MARKRAD,PS.y-set.MARKRAD,set.MARKRAD*2,set.MARKRAD*2)
     end
 
     for i=1, #PS.photons do
         if PS.marks.value then
-            local x,y=PS.photons[i].particle:getPosition()
+            local x,y = PS.photons[i].particle:getPosition()
             love.graphics.circle('line',x,y,set.MARKRAD)
             love.graphics.print(PS.photons[i].id,x+set.MARKRAD,y+set.MARKRAD)
         end
@@ -182,7 +187,7 @@ function love.draw()
 end
 
 function love.filedropped(file)
-    PS.dropImd(file)
+    PS.dropFile(file)
 end
 
 function love.keypressed(key, unicode, isrepeat)
@@ -195,18 +200,18 @@ end
 
 function love.mousepressed(x, y, button, istouch)
     nk:mousepressed(x, y, button, istouch)
-    if button==1 then
+    if button == 1 then
         for i=1, #PS.photons do
             local px, py = PS.photons[i].particle:getPosition()
-            if ((px-x)^2 + (py-y)^2) < set.MARKRAD^2 and not PS.drag then
-                PS.systems.value=i
+            if ((px-x)^2+(py-y)^2)<set.MARKRAD^2 and not PS.drag then
+                PS.systems.value = i
                 PS.drag = true
                 break
             end
         end
     end
-    if button==2 then
-        if PS.codestate=='active' then
+    if button == 2 then
+        if PS.codestate == 'active' then
             love.system.setClipboardText(
                     PS.photons[PS.systems.value].code.value)
         end
@@ -215,7 +220,7 @@ end
 
 function love.mousereleased(x, y, button, istouch)
     nk:mousereleased(x, y, button, istouch)
-    if button==1 then
+    if button == 1 then
         PS.drag = false
     end
 end

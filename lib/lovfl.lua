@@ -35,7 +35,6 @@ local utf8 = require('utf8')
 local lovfs = love.filesystem
 
 local FL={}
-
 function FL.loadAll(dir,...)
     local arr = {}
     local exist = lovfs.getInfo(dir)
