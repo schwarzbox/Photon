@@ -1,6 +1,6 @@
 #!/usr/bin/env love
 -- PHOTON
--- 0.55
+-- 0.7
 -- Editor (love2d)
 
 -- main.lua
@@ -38,10 +38,11 @@ local set = require('editor/set')
 local ui = require('editor/ui')
 local PH = require('editor/ph')
 
--- 0.6
+-- 0.8
+-- release MAC OS with nuklear.so
+-- 0.9
 -- ui colors (delete,setup, marks)
--- release mac os
--- 8 colors
+-- ui hints
 
 local PS = {
         count = 0,
@@ -56,11 +57,12 @@ local PS = {
         x = set.VIEWWID/2,y = set.VIEWHEI/2
     }
 
+-- actions
 function PS.new(cln)
     local id = 1
     local phid = {}
     for i=1, #PS.photons do
-        phid[i]=PS.photons[i].id
+        phid[i] = PS.photons[i].id
     end
     table.sort(phid)
     while phid[id] == id do
@@ -68,7 +70,7 @@ function PS.new(cln)
     end
 
     local clone
-    if cln then clone=cln end
+    if cln then clone = cln end
     local photon = PH:new{PS=PS,id=id,set=clone}
     PS.photons[#PS.photons+1] = photon
     PS.systems.items[#PS.photons] = tostring(id)
@@ -86,7 +88,7 @@ function PS.export()
     if #PS.photons>0 then
         local photon = PS.photons[PS.systems.value]
         love.filesystem.createDirectory(photon.name)
-        local phtname = photon.name..'/'..photon.name..'.'..set.PEXT
+        local phtname = photon.name..'/'..photon.name..'.'..set.PHTEXT
         photon:saveImd()
         fl.saveLove(phtname,photon.code.value,true)
     end
@@ -106,6 +108,7 @@ function PS.delete()
     end
 end
 
+-- support
 function PS.loadImd()
     for k,v in pairs(fl.loadPath(PS.loadpath,unpack(set.IMGEXT))) do
         PS.imgbase[k] = love.image.newImageData(v)
@@ -129,7 +132,7 @@ end
 function PS.dropFile(file)
     local path = fl.copyLove(file,set.TMPDIR)
     PS.loadpath = set.TMPDIR..'/'..fl.name(path)
-    if fl.ext(path) == 'pht' then
+    if fl.ext(path) == set.PHTEXT then
         PS.loadPht()
     else
         PS.loadImd()

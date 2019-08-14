@@ -1,6 +1,5 @@
 -- Tue Aug  6 17:30:49 2019
 -- (c) Alexander Veledzimovich
-
 -- ui PHOTON
 
 -- lua<5.3
@@ -32,7 +31,7 @@ function UI.editor(nk,PS)
     if nk:windowBegin('Editor', set.MIDWID, 0, set.EDWID, set.EDHEI,
             'border', 'title', 'movable','minimizable') then
 
-        nk:layoutRow('dynamic',set.DOUBHEI + set.GROUPMARGIN * 2, 1)
+        nk:layoutRow('dynamic',set.DOUBHEI+set.GROUPMARGIN*2, 1)
         nk:groupBegin('Menu','border')
             nk:layoutRow('dynamic',set.DOUBHEI,5)
             if nk:button('New') then PS.new() end
@@ -43,7 +42,7 @@ function UI.editor(nk,PS)
         nk:groupEnd()
 
     if PH then
-        nk:layoutRow('dynamic',set.SINGHEI + set.GROUPMARGIN * 2, 1)
+        nk:layoutRow('dynamic',set.SINGHEI+set.GROUPMARGIN*2, 1)
         nk:groupBegin('Control','border')
             nk:layoutRow('dynamic',set.SINGHEI, 7)
             if nk:button('Start') then PH:start() end
@@ -56,7 +55,7 @@ function UI.editor(nk,PS)
         nk:groupEnd()
 
 
-        nk:layoutRow('dynamic',set.SINGHEI + set.GROUPMARGIN * 2, 1)
+        nk:layoutRow('dynamic',set.SINGHEI+set.GROUPMARGIN*2, 1)
         nk:groupBegin('Emit','border')
             nk:layoutRow('dynamic',set.SINGHEI, {0.2,0.5,0.1,0.05,0.15})
             if nk:button('Emit') then
@@ -69,7 +68,7 @@ function UI.editor(nk,PS)
         nk:groupEnd()
 
 
-        nk:layoutRow('dynamic',set.SINGHEI * 3 + set.GROUPMARGIN * 4, 1)
+        nk:layoutRow('dynamic',set.SINGHEI*3+set.GROUPMARGIN*4, 1)
         nk:groupBegin('Buffer','border')
             nk:layoutRow('dynamic',set.SINGHEI, {0.2,0.05,0.25,0.25,0.25})
             nk:label('Insert Mode')
@@ -86,7 +85,7 @@ function UI.editor(nk,PS)
         nk:groupEnd()
 
 
-        nk:layoutRow('dynamic',set.SINGHEI * 5 + set.GROUPMARGIN * 5, 1)
+        nk:layoutRow('dynamic',set.SINGHEI*5+set.GROUPMARGIN*5, 1)
         nk:groupBegin('Area','border')
             nk:layoutRow('dynamic',set.SINGHEI, 1)
             nk:property('Emission Rate', 0, PH.set.rate, set.PEMIT, 1, 10)
@@ -101,7 +100,7 @@ function UI.editor(nk,PS)
             nk:radio('uniform',PH.set.areaForm)
             nk:radio('normal',PH.set.areaForm)
             nk:layoutRow('dynamic',set.SINGHEI, 4)
-            nk:spacing(1)
+            nk:checkbox('relative',PH.set.relative)
             nk:radio('ellipse',PH.set.areaForm)
             nk:radio('borderellipse','sphere',PH.set.areaForm)
             nk:radio('borderrectangle','perimeter',PH.set.areaForm)
@@ -113,7 +112,7 @@ function UI.editor(nk,PS)
 
 
         local oldform = PH.set.form.value
-        nk:layoutRow('dynamic',set.DOUBHEI + set.GROUPMARGIN * 2, 1)
+        nk:layoutRow('dynamic',set.DOUBHEI+set.GROUPMARGIN*2, 1)
         nk:groupBegin('Texture','border')
             nk:layoutRow('dynamic', set.DOUBHEI,{0.2,0.6,0.2})
             nk:label('Texture','left')
@@ -131,13 +130,13 @@ function UI.editor(nk,PS)
             nk:label(PH.set.form.value,'centered')
         nk:groupEnd()
 
-        if PH.set.form.value~=oldform then
+        if PH.set.form.value ~= oldform then
             PH:setImageData()
         end
         local imagedata = PS.imgbase[PH.set.form.value]
         local imdwid,imdhei
         if imagedata then
-            imdwid,imdhei=imagedata:getDimensions()
+            imdwid,imdhei = imagedata:getDimensions()
         end
 
         local oldwid, oldhei
@@ -153,15 +152,15 @@ function UI.editor(nk,PS)
         nk:property('Quad Y', 1, PH.set.qRows, set.PQUAD, 1, 1)
 
         if imagedata then
-            PH.set.wid.value=imdwid/PH.set.qCols.value
-            PH.set.hei.value=imdhei/PH.set.qRows.value
+            PH.set.wid.value = imdwid/PH.set.qCols.value
+            PH.set.hei.value = imdhei/PH.set.qRows.value
         end
 
-        if oldwid~=PH.set.wid.value then
+        if oldwid ~= PH.set.wid.value then
             PH.set.offsetX.value = PH.set.wid.value/2
             PH:setImageData()
         end
-        if oldhei~=PH.set.hei.value then
+        if oldhei ~= PH.set.hei.value then
             PH.set.offsetY.value = PH.set.hei.value/2
             PH:setImageData()
         end
@@ -169,11 +168,11 @@ function UI.editor(nk,PS)
         nk:property('Offset X', 0, PH.set.offsetX, PH.set.wid.value, 1, 1)
         nk:property('Offset Y', 0, PH.set.offsetY, PH.set.hei.value, 1, 1)
 
-        local rowclr = #PH.set.color/2
-        nk:layoutRow('dynamic', set.DOUBHEI, rowclr/4)
+        local rowclr = #PH.set.color/4
+        nk:layoutRow('dynamic', set.COLORHEI, rowclr/4)
         UI.layoutColors(nk,PH,1,rowclr)
-        nk:layoutRow('dynamic', set.DOUBHEI, rowclr/4)
-        UI.layoutColors(nk,PH,rowclr+1,#PH.set.color)
+        nk:layoutRow('dynamic', set.COLORHEI, rowclr/4)
+        UI.layoutColors(nk,PH,rowclr+1, #PH.set.color)
 
         nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Time Min',
@@ -214,7 +213,7 @@ function UI.editor(nk,PS)
         nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Rad Acc Min',
                 -set.PSPEED, PH.set.radAccMin, set.PSPEED, 1,10)
-        nk:property('Rad Y Max',
+        nk:property('Rad Acc Max',
                 PH.set.radAccMin.value, PH.set.radAccMax,set.PSPEED,1,10)
         nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Tang Acc Min',
@@ -227,9 +226,8 @@ function UI.editor(nk,PS)
         nk:property('Damp Max',
                 PH.set.dampMin.value, PH.set.dampMax, 1, 0.01,0.01)
 
-        nk:layoutRow('dynamic',set.SINGHEI,1)
+        nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Direction',0, PH.set.dir, set.PI2, 0.01,0.1)
-        nk:layoutRow('dynamic',set.SINGHEI,1)
         nk:property('Spread', 0, PH.set.spread, set.PI2, 0.01,0.1)
 
         nk:layoutRow('dynamic',set.SINGHEI,2)
@@ -244,9 +242,6 @@ function UI.editor(nk,PS)
                 0, PH.set.rotateMin, set.PI2, 0.01,0.1)
         nk:property('Rotate Max',
                 PH.set.rotateMin.value, PH.set.rotateMax,set.PI2, 0.01,0.1)
-
-        nk:layoutRow('dynamic',set.SINGHEI,1)
-        nk:selectable('RelativeRotation',nil,'centered',PH.set.relative)
     end
     end
     nk:windowEnd()
@@ -261,15 +256,13 @@ function UI.layoutColors(nk,PH,st,fin)
         if nk:comboboxBegin(nil, color) then
             local rgba = {'R',clr[i],'G',clr[i+1],'B',clr[i+2],'A',clr[i+3]}
             for j=1, #rgba,2 do
-                nk:layoutRow('dynamic',set.SINGHEI, {0.1,0.7,0.2})
-                nk:label(rgba[j])
-                rgba[j+1] = nk:slider(0, rgba[j+1], 1, 0.01)
-                nk:label(rgba[j+1])
+                nk:layoutRow('dynamic',set.SINGHEI, 1)
+                rgba[j+1] = nk:property(rgba[j],0, rgba[j+1], 1, 0.01, 0.01)
             end
-            PH.set.color[i]=rgba[2]
-            PH.set.color[i+1]=rgba[4]
-            PH.set.color[i+2]=rgba[6]
-            PH.set.color[i+3]=rgba[8]
+            PH.set.color[i] = rgba[2]
+            PH.set.color[i+1] = rgba[4]
+            PH.set.color[i+2] = rgba[6]
+            PH.set.color[i+3] = rgba[8]
             nk:comboboxEnd()
         end
     end

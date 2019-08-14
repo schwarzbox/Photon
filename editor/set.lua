@@ -1,13 +1,14 @@
 -- Tue Aug  6 00:54:24 2019
 -- (c) Alexander Veledzimovich
 -- set PHOTON
+
 -- lua<5.3
 local utf8 = require('utf8')
 local unpack = table.unpack or unpack
 
 local SET = {
     APPNAME = love.window.getTitle(),
-    VER = '0.55',
+    VER = '0.7',
     SAVE = 'photonsave.lua',
     FULLSCR = love.window.getFullscreen(),
     WID = love.graphics.getWidth(),
@@ -30,11 +31,14 @@ local SET = {
     GROUPMARGIN = 5,
     SINGHEI = 16,
     DOUBHEI = 25,
+    COLORHEI = 20,
+
     MARKRAD = 4,
 
-    IMGEXT={'png','jpg'},
-    TMPDIR='tmp',
-    DEFPATH='',
+    IMGEXT = {'png','jpg'},
+    PHTEXT = 'pht',
+    TMPDIR = 'tmp',
+    DEFPATH = '',
 
     PBUFFER = 65536,
     PWH = 512,
@@ -44,8 +48,7 @@ local SET = {
     PSPEED = 2048,
     PI = math.pi,
     PI2 = math.pi*2,
-    PQUAD=16,
-    PEXT='pht',
+    PQUAD = 16,
 }
 
 SET.VIEWWID = SET.MIDWID

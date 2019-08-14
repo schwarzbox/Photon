@@ -1,6 +1,5 @@
 -- Wed Aug  7 20:43:04 2019
 -- (c) Alexander Veledzimovich
-
 -- ph PHOTON
 
 -- lua<5.3
@@ -26,8 +25,9 @@ PH.set = {
         form={value='circle'},
         wid={value=8},hei={value=8},qCols={value=1},qRows={value=1},
         offsetX={value=4},offsetY={value=4},
-        color={0.0,0.0,0.0,0.0,1.0,1.0,1,0.3,1.0,1.0,1,0.6,
-                1.0,1.0,1,0.9,1.0,1.0,1,0.6,1.0,1.0,1.0,0.0},
+        color={0.0,0.0,0.0,0.0, 1.0,1.0,1,0.2, 1.0,1.0,1,0.4,
+                1.0,1.0,1,0.6, 1.0,1.0,1,0.8, 1.0,1.0,1.0,0.6,
+                1.0,1.0,1.0,0.4, 1.0,1.0,1.0,0.0},
         areaAng={value=0},areaDir={value=false},
         timeMin={value=1},timeMax={value=1},
         size1={value=0},size2={value=0.3},size3={value=0.6},
