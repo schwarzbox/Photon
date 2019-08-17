@@ -1,6 +1,6 @@
 #!/usr/bin/env love
 -- PHOTON
--- 0.7
+-- 0.8
 -- Editor (love2d)
 
 -- main.lua
@@ -31,16 +31,22 @@ io.stdout:setvbuf('no')
 local unpack = table.unpack or unpack
 local utf8 = require('utf8')
 
+-- for nuklear.sp path in bundle
+local app_path = love.filesystem.getSourceBaseDirectory()
+if app_path then
+    package.cpath = package.cpath .. ';'..app_path..'/../Frameworks/?.so'
+end
+
 local nuklear = require('nuklear')
+
 local fl = require('lib/lovfl')
 
 local set = require('editor/set')
 local ui = require('editor/ui')
 local PH = require('editor/ph')
 
--- 0.8
--- release MAC OS with nuklear.so
--- 0.9
+-- 1.0
+-- better icon
 -- ui colors (delete,setup, marks)
 -- ui hints
 
