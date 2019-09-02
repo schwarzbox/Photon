@@ -197,27 +197,27 @@ function UI.editor(nk,PS)
 
         nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Speed Min',
-                0, PH.set.speedMin, set.PSPEED, 1,10)
+                0, PH.set.speedMin, PH.set.speedMax.value, 1,10)
         nk:property('Speed Max',
                 PH.set.speedMin.value, PH.set.speedMax, set.PSPEED, 1,10)
         nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Acc X Min',
-                -set.PSPEED, PH.set.accXMin, set.PSPEED, 1, 10)
+                -set.PSPEED, PH.set.accXMin, PH.set.accXMax.value, 1, 10)
         nk:property('Acc X Max',
                 PH.set.accXMin.value, PH.set.accXMax,set.PSPEED, 1,10)
         nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Acc Y Min',
-                -set.PSPEED, PH.set.accYMin, set.PSPEED, 1,10)
+                -set.PSPEED, PH.set.accYMin, PH.set.accYMax.value, 1,10)
         nk:property('Acc Y Max',
                 PH.set.accYMin.value, PH.set.accYMax,set.PSPEED, 1,10)
         nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Rad Acc Min',
-                -set.PSPEED, PH.set.radAccMin, set.PSPEED, 1,10)
+                -set.PSPEED, PH.set.radAccMin, PH.set.radAccMax.value, 1,10)
         nk:property('Rad Acc Max',
                 PH.set.radAccMin.value, PH.set.radAccMax,set.PSPEED,1,10)
         nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Tang Acc Min',
-                -set.PSPEED, PH.set.tanAccMin, set.PSPEED, 1, 10)
+                -set.PSPEED, PH.set.tanAccMin, PH.set.tanAccMax.value, 1, 10)
         nk:property('Tang Acc Max',
                 PH.set.tanAccMin.value, PH.set.tanAccMax,set.PSPEED,1, 10)
         nk:layoutRow('dynamic',set.SINGHEI,2)
@@ -232,14 +232,14 @@ function UI.editor(nk,PS)
 
         nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Spin Min',
-                -set.PI2, PH.set.spinMin, set.PI2, 0.01,0.1)
+                -set.PI2, PH.set.spinMin, PH.set.spinMax.value, 0.01,0.1)
         nk:property('Spin Max',
                 PH.set.spinMin.value, PH.set.spinMax,set.PI2, 0.01,0.1)
         nk:layoutRow('dynamic',set.SINGHEI,1)
         nk:property('Spin Variation', 0, PH.set.spinVar, 1, 0.01,0.01)
         nk:layoutRow('dynamic',set.SINGHEI,2)
-        nk:property('Rotate Min',
-                0, PH.set.rotateMin, set.PI2, 0.01,0.1)
+        nk:property('Rotate Min',0, PH.set.rotateMin,
+                PH.set.rotateMax.value, 0.01,0.1)
         nk:property('Rotate Max',
                 PH.set.rotateMin.value, PH.set.rotateMax,set.PI2, 0.01,0.1)
     end
