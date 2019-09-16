@@ -12,6 +12,7 @@ local set = require('editor/set')
 
 local UI = {}
 
+
 function UI.editor(nk,PS)
     local PH = PS.photons[PS.systems.value]
     nk:frameBegin()
@@ -38,7 +39,10 @@ function UI.editor(nk,PS)
             if nk:button('Clone') then PS.clone() end
             if nk:button('Export') then  PS.export() end
             nk:edit('simple',PH and PH.set.pname or {value='name'})
+
+            nk:styleLoadColors(set.COLORS)
             if nk:button('Delete') then PS.delete() end
+            nk:styleDefault()
         nk:groupEnd()
 
     if PH then
@@ -49,9 +53,11 @@ function UI.editor(nk,PS)
             if nk:button('Pause') then PH:pause() end
             if nk:button('Stop') then  PH:stop() end
             if nk:button('Reset') then PH:reset() end
+            nk:styleLoadColors(set.COLORS)
             nk:selectable('Setup',nil,'centered',PS.hotset)
             nk:combobox(PS.systems,PS.systems.items)
             nk:selectable('Marks', nil, 'centered',PS.marks)
+            nk:styleDefault()
         nk:groupEnd()
 
 
@@ -90,9 +96,6 @@ function UI.editor(nk,PS)
             nk:layoutRow('dynamic',set.SINGHEI, 1)
             nk:property('Emission Rate', 0, PH.set.rate, set.PEMIT, 1, 10)
 
-            nk:layoutRow('dynamic',set.SINGHEI,2)
-            nk:property('Emission Area X', 0, PH.set.areaX, set.VIEWWID, 1, 10)
-            nk:property('Emission Area Y', 0, PH.set.areaY, set.VIEWWID, 1, 10)
 
             nk:layoutRow('dynamic',set.SINGHEI, 4)
             nk:checkbox('outside', PH.set.areaDir)
@@ -104,6 +107,10 @@ function UI.editor(nk,PS)
             nk:radio('ellipse',PH.set.areaForm)
             nk:radio('borderellipse','sphere',PH.set.areaForm)
             nk:radio('borderrectangle','perimeter',PH.set.areaForm)
+
+            nk:layoutRow('dynamic',set.SINGHEI,2)
+            nk:property('Emission Area X', 0, PH.set.areaX, set.VIEWWID, 1, 10)
+            nk:property('Emission Area Y', 0, PH.set.areaY, set.VIEWWID, 1, 10)
 
             nk:layoutRow('dynamic',set.SINGHEI,1)
             nk:property('Emission Area Angle',

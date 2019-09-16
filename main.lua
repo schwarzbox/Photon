@@ -1,6 +1,6 @@
 #!/usr/bin/env love
 -- PHOTON
--- 0.85
+-- 1.0
 -- Editor (love2d)
 
 -- main.lua
@@ -45,10 +45,6 @@ local set = require('editor/set')
 local ui = require('editor/ui')
 local PH = require('editor/ph')
 
--- 1.0
--- better icon
--- ui colors (delete,setup, marks)
--- ui hints
 
 local PS = {
         count = 0,
