@@ -6,9 +6,7 @@
 local utf8 = require('utf8')
 local unpack = table.unpack or unpack
 
-local fl = require('lib/lovfl')
 local imd = require('lib/lovimd')
-
 local set = require('editor/set')
 
 local PH = {}
@@ -54,8 +52,9 @@ function PH:new(o)
 
     self.set=self.clone(self.set)
     self:setImageData()
-    local tx = love.graphics.newImage(self.imagedata)
-    self.particle = love.graphics.newParticleSystem(tx,self.set.buffer.value)
+
+    self.particle = love.graphics.newParticleSystem(
+                self.image,self.set.buffer.value)
     self.particle:setPosition(self.PS.x,self.PS.y)
     self.particle:setEmitterLifetime(self.set.lifetime.value)
 
@@ -109,6 +108,7 @@ function PH:setImageData()
                 self.set.wid.value,self.set.hei.value)
     end
     self.imagedata = texture
+    self.image = love.graphics.newImage(texture)
 end
 
 function PH:start() self.particle:start() end
@@ -134,7 +134,7 @@ function PH:setup()
             sst.areaAng.value,sst.areaDir.value
         )
 
-    self.particle:setTexture(love.graphics.newImage(self.imagedata))
+    self.particle:setTexture(self.image)
     if not self.forms[sst.form] then
         self.particle:setQuads(self:getQuads())
     end

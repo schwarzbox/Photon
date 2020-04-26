@@ -28,7 +28,6 @@
 -- 0.3
 -- improve gradient (circular linear)
 -- 1d array
--- improve form data with color mapPixel?
 -- improve splash (with noise)
 
 
@@ -405,38 +404,40 @@ function IMD.contrast(imgdata,contrast)
     return data
 end
 
-function IMD.form(form,color,sx,sy,vertex)
+function IMD.form(form,color,sx,sy,vertex,fill)
     form = form or 'line'
     sx = sx>=1 and sx or 1
     sy = sy>=1 and sy or sx
     vertex = vertex or {}
+    fill = fill or 'fill'
     if form == 'triangle' then
         vertex = {0,0,sx,sy/2,0,sy}
     elseif form == 'hexagon' then
-        local hexside = sx/2
-        local nwpoint = hexside - hexside/2
-        local nepoint = hexside + hexside/2
-        vertex={nwpoint,0,nepoint,0,sx,hexside,nepoint,sx,nwpoint,sx,0,hexside}
+        local hexhei = sy * 0.25
+        local midwid = sx / 2
+        vertex = {midwid, 0, sx, hexhei, sx, sy-hexhei,
+                midwid, sy, 0, sy-hexhei, 0, hexhei}
+
     elseif form == 'star' then
         local midwid = sx/2
         local midhei = sy/2
-        local thidrdwid = sx/3
-        local thirdhei = sy/3
-        vertex={0,0,thidrdwid,thirdhei,midwid,0,midwid,thirdhei,
-                sx,midhei,midwid,sy-thirdhei,midwid,sy,
-                thidrdwid,sy-thirdhei,0,sy,midwid/2,midhei,0,0}
+        local wid3 = sx/3
+        local hei3 = sy/3
+        vertex={0,0,wid3,hei3,midwid,0,midwid,hei3,
+                sx,midhei,midwid,sy-hei3,midwid,sy,
+                wid3,sy-hei3,0,sy,midwid/2,midhei,0,0}
     end
 
     color = color or WHITE
     local forms = {
-        ['circle']=function() love.graphics.circle('fill',sx/2,sy/2,sx/2) end,
+        ['circle']=function() love.graphics.circle(fill,sx/2,sy/2,sx/2) end,
         ['ellipse']=function()
-                    love.graphics.ellipse('fill',sx/2,sy/2,sx/2,sy/2,32) end,
-        ['triangle']=function() love.graphics.polygon('fill',vertex) end,
-        ['rectangle']=function()love.graphics.rectangle('fill',0,0,sx,sy) end,
-        ['hexagon']=function() love.graphics.polygon('fill',vertex) end,
+                    love.graphics.ellipse(fill,sx/2,sy/2,sx/2,sy/2,32) end,
+        ['triangle']=function() love.graphics.polygon(fill,vertex) end,
+        ['rectangle']=function()love.graphics.rectangle(fill,0,0,sx,sy) end,
+        ['hexagon']=function() love.graphics.polygon(fill,vertex) end,
         ['star']=function() love.graphics.line(vertex) end,
-        ['polygon']=function() love.graphics.polygon('fill',vertex) end,
+        ['polygon']=function() love.graphics.polygon(fill,vertex) end,
         ['line']=function() love.graphics.line(vertex) end
     }
 

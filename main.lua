@@ -26,6 +26,13 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+-- 1.2
+-- improve color?
+-- 1.3
+-- imporve resize
+-- 1.4
+-- console run scripts
+
 -- lua<5.3
 io.stdout:setvbuf('no')
 local unpack = table.unpack or unpack
@@ -56,7 +63,7 @@ local PS = {
         marks = {value=true},
         codestate = false,
         drag = false,
-        x = set.VIEWWID/2,y = set.VIEWHEI/2
+        x = set.VIEWWID/2, y = set.VIEWHEI/2
     }
 
 -- actions
@@ -181,12 +188,13 @@ function love.draw()
     end
 
     for i=1, #PS.photons do
+        love.graphics.draw(PS.photons[i].particle)
+        local mode = i==PS.systems.value and 'fill' or 'line'
         if PS.marks.value then
             local x,y = PS.photons[i].particle:getPosition()
-            love.graphics.circle('line',x,y,set.MARKRAD)
+            love.graphics.circle(mode,x,y,set.MARKRAD)
             love.graphics.print(PS.photons[i].id,x+set.MARKRAD,y+set.MARKRAD)
         end
-        love.graphics.draw(PS.photons[i].particle)
     end
     nk:draw()
 end

@@ -4,7 +4,7 @@ function love.conf(t)
      -- Search files in source directory before save directory (boolean)
     t.appendidentity = false
     -- The LÖVE ver this game was made for (string)
-    t.ver = '11.2'
+    t.ver = '11.3'
     -- Attach a console (boolean, Windows only)
     t.console = false
     -- Enable the accelerometer on iOS and Android by exposing it as a Joystick (boolean)
@@ -42,13 +42,13 @@ function love.conf(t)
     -- Index of the monitor to show the window in (number)
     t.window.display = 1
     -- Enable high-dpi mode for the window on a Retina display (boolean)
-    t.window.highdpi = false
+    t.window.highdpi = true
     -- The x-coordinate of the window's position in the specified display (number)
     t.window.x = nil
     -- The y-coordinate of the window's position in the specified display (number)
     t.window.y = nil
     -- Enable the audio module (boolean)
-    t.modules.audio = true
+    t.modules.audio = false
     -- Enable the data module (boolean)
     t.modules.data = true
     -- Enable the event module (boolean)
@@ -60,7 +60,7 @@ function love.conf(t)
     -- Enable the image module (boolean)
     t.modules.image = true
     -- Enable the joystick module (boolean)
-    t.modules.joystick = true
+    t.modules.joystick = false
     -- Enable the keyboard module (boolean)
     t.modules.keyboard = true
     -- Enable the math module (boolean)
@@ -68,19 +68,19 @@ function love.conf(t)
     -- Enable the mouse module (boolean)
     t.modules.mouse = true
     -- Enable the physics module (boolean)
-    t.modules.physics = true
+    t.modules.physics = false
     -- Enable the sound module (boolean)
-    t.modules.sound = true
+    t.modules.sound = false
     -- Enable the system module (boolean)
     t.modules.system = true
     -- Enable the timer module (boolean), Disabling it will result 0 delta time in love.update
     t.modules.timer = true
     -- Enable the thread module (boolean)
-    t.modules.thread = true
+    t.modules.thread = false
     -- Enable the touch module (boolean)
-    t.modules.touch = true
+    t.modules.touch = false
     -- Enable the video module (boolean)
-    t.modules.video = true
+    t.modules.video = false
     -- Enable the window module (boolean)
     t.modules.window = true
 end

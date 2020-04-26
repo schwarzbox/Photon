@@ -2,7 +2,7 @@
 
 Particle Editor for Love2d.
 
-v1.0
+v1.1
 
 ![Screenshot](screenshot/screenshot1.jpg)
 
