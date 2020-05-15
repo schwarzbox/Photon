@@ -72,11 +72,6 @@ function PH.clone(clone)
     return cloned
 end
 
-function PH:saveImd()
-    local imgname = self.name..'/'..self:pathImd()
-    self.imagedata:encode('png',imgname)
-end
-
 function PH:pathImd()
     return self.name..'.png'
 end
@@ -214,14 +209,21 @@ end
 
 function PH:generate()
     local code = [[
--- ]]..set.VER..' '..set.APPNAME..[[ Editor (love2d)
+--lua
+--]]..set.VER..' '..set.APPNAME..[[ Editor (love2d)
 
 local unpack = table.unpack or unpack
 local quads
 local function photon(imd)
     if not imd then
         imd = love.image.newImageData(']]..set.DEFPATH..'/'..self:pathImd()..[[')
+    elseif type(imd)=='table' then
+        local bytedata = love.data.newByteData(chars(imd))
+        imd = love.image.newImageData(bytedata)
+    elseif type(imd)=='string' then
+        imd = love.image.newImageData(imd)
     end
+
     local tx = love.graphics.newImage(imd)
     local ph = love.graphics.newParticleSystem(tx,]]..self.set.buffer.value..[[)
     ph:setInsertMode(']]..self.set.mode.value..[[')
@@ -248,6 +250,14 @@ local function photon(imd)
     ph:setRotation(]]..self.set.rotateMin.value..[[,]]..self.set.rotateMax.value..[[)
     ph:setRelativeRotation(]]..tostring(self.set.relative.value)..[[)
     return ph
+end
+
+function chars(data)
+    local code={}
+    for i=1, #data do
+        code[#code+1]=string.char(data[i])
+    end
+    return table.concat(code)
 end
 
 function quads(imgdata,numx,numy)

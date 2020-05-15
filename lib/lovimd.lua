@@ -30,7 +30,6 @@
 -- 1d array
 -- improve splash (with noise)
 
-
 if arg[1] then print('0.25 LOVIMG Image Functions (love2d)', arg[1]) end
 
 -- old lua version
@@ -169,6 +168,9 @@ function IMD.crop(imgdata,x1,y1,x2,y2)
     end
     sx=x2-x1
     sy=y2-y1
+    if sx<=0 then sx=1 end
+    if sy<=0 then sy=1 end
+    print(sx,sy)
     local data=love.image.newImageData(sx,sy)
     data:paste(imgdata,0,0,x1,y1,sx,sy)
     return data
@@ -222,6 +224,18 @@ end
 
 -- blend
 -- add subtract replace screen
+function IMD.screenshot(filename,x, y, wid, hei)
+    x=x or 0
+    y=y or 0
+    wid=wid or love.graphics.getWidth()
+    hei=hei or love.graphics.getHeight()
+
+    love.graphics.captureScreenshot(function(imgdata)
+                    imgdata = IMD.crop(imgdata,x,y,x+wid,y+hei)
+                    imgdata:encode('png',filename)
+            end)
+end
+
 function IMD.merge(imgdata1,imgdata2,x,y,blend)
     x = x or 0
     y = y or 0

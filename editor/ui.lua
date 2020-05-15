@@ -12,17 +12,17 @@ local set = require('editor/set')
 
 local UI = {}
 
-
 function UI.editor(nk,PS)
     local PH = PS.photons[PS.systems.value]
     nk:frameBegin()
     if nk:windowBegin('Code', 0, set.MIDHEI, set.CODEWID, set.CODEHEI,
-            'border', 'title', 'movable','minimizable','scrollbar') then
+            'border', 'title', 'movable','minimizable',
+            'scrollbar','scalable') then
         local _,_,_,hei = nk:windowGetContentRegion()
         if PH then
             nk:layoutRow('dynamic', hei-set.GROUPMARGIN*2, 1)
             if nk:widgetIsHovered() then
-                nk:tooltip('Right Click To Copy')
+                nk:tooltip(PS.tooltip)
             end
             PS.codestate = nk:edit('box', PH.code)
         end
@@ -34,14 +34,14 @@ function UI.editor(nk,PS)
 
         nk:layoutRow('dynamic',set.DOUBHEI+set.GROUPMARGIN*2, 1)
         nk:groupBegin('Menu','border')
-            nk:layoutRow('dynamic',set.DOUBHEI,5)
+            nk:layoutRow('dynamic',set.DOUBHEI,6)
             if nk:button('New') then PS.new() end
             if nk:button('Clone') then PS.clone() end
+            if nk:button('Delete') then PS.delete() end
             if nk:button('Export') then  PS.export() end
             nk:edit('simple',PH and PH.set.pname or {value='name'})
-
             nk:styleLoadColors(set.COLORS)
-            if nk:button('Delete') then PS.delete() end
+            nk:selectable('Single',nil,'centered',PS.single)
             nk:styleDefault()
         nk:groupEnd()
 
@@ -176,9 +176,9 @@ function UI.editor(nk,PS)
         nk:property('Offset Y', 0, PH.set.offsetY, PH.set.hei.value, 1, 1)
 
         local rowclr = #PH.set.color/4
-        nk:layoutRow('dynamic', set.COLORHEI, rowclr/4)
+        nk:layoutRow('dynamic', set.COLORROWHEI, rowclr/4)
         UI.layoutColors(nk,PH,1,rowclr)
-        nk:layoutRow('dynamic', set.COLORHEI, rowclr/4)
+        nk:layoutRow('dynamic', set.COLORROWHEI, rowclr/4)
         UI.layoutColors(nk,PH,rowclr+1, #PH.set.color)
 
         nk:layoutRow('dynamic',set.SINGHEI,2)
@@ -255,21 +255,46 @@ function UI.editor(nk,PS)
     nk:frameEnd()
 end
 
+local hex = {value=set.MAXHEX}
 function UI.layoutColors(nk,PH,st,fin)
     for i=st,fin,4 do
         local clr = PH.set.color
-        local color = nuklear.colorRGBA(clr[i]*255,clr[i+1]*255,
-                                        clr[i+2]*255,clr[i+3]*255)
-        if nk:comboboxBegin(nil, color) then
-            local rgba = {'R',clr[i],'G',clr[i+1],'B',clr[i+2],'A',clr[i+3]}
+        local clr255 = {clr[i]*255,clr[i+1]*255, clr[i+2]*255,clr[i+3]*255}
+        local color = nuklear.colorRGBA(unpack(clr255))
+
+        if nk:comboboxBegin(nil, color, nil, set.COLORBOXHEI) then
+            nk:layoutRow('dynamic', set.PICKERHEI, 1)
+            local rgba = {'R',clr255[i],'G',clr255[i+1],
+                            'B',clr255[i+2],'A',clr255[i+3]}
+
+            rgba[2],rgba[4],rgba[6],rgba[8] = nuklear.colorParseRGBA(
+                                                nk:colorPicker(color))
+
+
+            nk:layoutRow('dynamic',set.DOUBHEI, 1)
+            local act = nk:edit('field',hex)
+            if act=='inactive' then
+                local sharpColor = nuklear.colorRGBA(unpack(
+                                    {rgba[2],rgba[4],rgba[6],rgba[8]}))
+                hex.value = sharpColor:sub(2)
+            end
+
+            if tonumber(hex.value,16) then
+                local hexStr  = '#'..hex.value
+                if #hexStr==9 then
+                    rgba[2],rgba[4],rgba[6],rgba[8] = nuklear.colorParseRGBA(hexStr)
+                end
+            end
+
             for j=1, #rgba,2 do
                 nk:layoutRow('dynamic',set.SINGHEI, 1)
-                rgba[j+1] = nk:property(rgba[j],0, rgba[j+1], 1, 0.01, 0.01)
+                rgba[j+1] = nk:property(rgba[j],0, rgba[j+1], 255, 1, 1)
             end
-            PH.set.color[i] = rgba[2]
-            PH.set.color[i+1] = rgba[4]
-            PH.set.color[i+2] = rgba[6]
-            PH.set.color[i+3] = rgba[8]
+
+            PH.set.color[i] = rgba[2]/255
+            PH.set.color[i+1] = rgba[4]/255
+            PH.set.color[i+2] = rgba[6]/255
+            PH.set.color[i+3] = rgba[8]/255
             nk:comboboxEnd()
         end
     end

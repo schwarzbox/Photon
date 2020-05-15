@@ -1,11 +1,18 @@
--- 0.7 Photon Editor (love2d)
+--lua
+--1.3 Photon Editor (love2d)
 
 local unpack = table.unpack or unpack
 local quads
 local function photon(imd)
     if not imd then
-        imd = love.image.newImageData('res/pht/test215657453911565822127.png')
+        imd = love.image.newImageData('/test1.png')
+    elseif type(imd)=='table' then
+        local bytedata = love.data.newByteData(chars(imd))
+        imd = love.image.newImageData(bytedata)
+    elseif type(imd)=='string' then
+        imd = love.image.newImageData(imd)
     end
+
     local tx = love.graphics.newImage(imd)
     local ph = love.graphics.newParticleSystem(tx,32768)
     ph:setInsertMode('top')
@@ -13,10 +20,10 @@ local function photon(imd)
     ph:setEmissionRate(512)
     ph:setEmissionArea('borderellipse',96,96,0,true)
     if true then
-        ph:setQuads(unpack(quads(imd,1,1)))
+        ph:setQuads(unpack(quads(imd,3,1)))
     end
-    ph:setOffset(98,4)
-    ph:setColors(0.94999992847443,1,0.049999967217445,0.5,0.14999996125698,1,1,0.5,0.86000001430511,0.60000002384186,0.34000000357628,1,0.39000007510185,1,1,0.5,1,1,0.24000000953674,0.5,1,0.36000001616776,0.78000000491738,0.3999999910593,0.82000000402331,0.45000001229346,0.76000000536442,0.53999998420477,1,0.72000000625849,1,0.44999998807907)
+    ph:setOffset(32.666666666667,50)
+    ph:setColors(0.94999992847443,1,0.049999967217445,0.5,0.14999996125698,1,1,0.5,0.86000001430511,0.60000002384186,0.34000000357628,1,0.39000007510185,1,1,0.5,1,1,0.24000000953674,0.5,1,0.36000001430511,0.78000003099442,0.39999997615814,0.81999999284744,0.45000001788139,0.75999999046326,0.53999996185303,1,0.72000002861023,1,0.44999998807907)
     ph:setParticleLifetime(0.5,3)
     ph:setSizes(0,0.20000000298023,0.40000000596046,0.60000002384186,0.80000001192093,1,1,1)
     ph:setSizeVariation(1)
@@ -32,6 +39,14 @@ local function photon(imd)
     ph:setRotation(0,0)
     ph:setRelativeRotation(true)
     return ph
+end
+
+function chars(data)
+    local code={}
+    for i=1, #data do
+        code[#code+1]=string.char(data[i])
+    end
+    return table.concat(code)
 end
 
 function quads(imgdata,numx,numy)

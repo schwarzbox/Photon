@@ -1,6 +1,6 @@
 #!/usr/bin/env love
 -- PHOTON
--- 1.0
+-- 1.3
 -- Editor (love2d)
 
 -- main.lua
@@ -21,17 +21,17 @@
 -- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
--- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-- AUTHORbS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
--- 1.2
--- improve color?
--- 1.3
--- imporve resize
 -- 1.4
--- console run scripts
+-- auto decode
+-- 1.5
+-- move emitter
+-- 1.6
+-- scripts?
 
 -- lua<5.3
 io.stdout:setvbuf('no')
@@ -47,11 +47,14 @@ end
 local nuklear = require('nuklear')
 
 local fl = require('lib/lovfl')
+local imd = require('lib/lovimd')
+local lpng = require('lib/lpng')
 
 local set = require('editor/set')
 local ui = require('editor/ui')
 local PH = require('editor/ph')
 
+local nk
 
 local PS = {
         count = 0,
@@ -61,7 +64,9 @@ local PS = {
         systems = {value=1,items={'0'}},
         hotset = {value=true},
         marks = {value=true},
+        single={value=true},
         codestate = false,
+        tooltip = 'Right Click to Copy',
         drag = false,
         x = set.VIEWWID/2, y = set.VIEWHEI/2
     }
@@ -96,10 +101,15 @@ end
 function PS.export()
     if #PS.photons>0 then
         local photon = PS.photons[PS.systems.value]
-        love.filesystem.createDirectory(photon.name)
-        local phtname = photon.name..'/'..photon.name..'.'..set.PHTEXT
-        photon:saveImd()
-        fl.saveLove(phtname,photon.code.value,true)
+
+        if PS.single.value then
+            PS.savePht(photon)
+        else
+            love.filesystem.createDirectory(photon.name)
+            local phtname = photon.name..'/'..photon.name..'.'..set.PHTEXT
+            PS.saveImd(photon)
+            fl.saveLoveFile(phtname,photon.code.value,true)
+        end
     end
 end
 
@@ -118,22 +128,81 @@ function PS.delete()
 end
 
 -- support
-function PS.loadImd()
-    for k,v in pairs(fl.loadPath(PS.loadpath,unpack(set.IMGEXT))) do
-        PS.imgbase[k] = love.image.newImageData(v)
-        if #PS.photons>0 then
-            local photon = PS.photons[PS.systems.value]
-            photon.set.form.value = k
-            photon:setImageData()
-        end
+function PS.savePht(photon)
+    local canvas = love.graphics.newCanvas(love.graphics.getWidth(),
+                                           love.graphics.getHeight())
+    love.graphics.setCanvas(canvas)
+    love.graphics.draw(photon.particle)
+    love.graphics.setCanvas()
+
+    local imgdata = canvas:newImageData()
+    imgdata = imd.crop(imgdata)
+    local sx,sy = imgdata:getDimensions()
+    local size = sx>sy and sx or sy
+    local scale = set.PREVIEWSIZE/size
+    if scale<1 then
+        imgdata = imd.resize(imgdata,scale)
     end
+
+    local phtcover='scr.png'
+    local phtimage = photon:pathImd()
+    imgdata:encode('png',phtcover)
+    photon.imagedata:encode('png',phtimage)
+
+    local data1 = lpng.bytes(fl.loadLoveFile(phtcover))
+    local data2 = lpng.bytes(fl.loadLoveFile(phtimage))
+
+    local result = lpng.encode(data1, data2,photon.code.value)
+
+    if result then
+        local name = photon.name..'.'..set.PHTEXT..'.png'
+        fl.saveLoveFile(name,lpng.chars(result),true)
+    end
+    love.filesystem.remove(phtcover)
+    love.filesystem.remove(photon:pathImd())
 end
 
 function PS.loadPht()
     PS.new()
     if #PS.photons>0 then
         local photon = PS.photons[PS.systems.value]
-        photon:import(love.filesystem.load(PS.loadpath)(photon.imagedata))
+        photon:import(fl.loadLove(PS.loadpath,photon.imagedata))
+        print(photon.set.form.value)
+    end
+end
+
+function PS.loadPhtPng()
+    local images, cd = lpng.decode(lpng.bytes(fl.loadLoveFile(PS.loadpath)))
+    local bytedata = love.data.newByteData(lpng.chars(images[2]))
+    local name = fl.noext(fl.base(PS.loadpath))
+    PS.imgbase[name] = love.image.newImageData(bytedata)
+
+    PS.new()
+    if #PS.photons>0 then
+        local photon = PS.photons[PS.systems.value]
+        photon:import(load(cd)(photon.imagedata))
+    end
+    PS.setImd(name)
+end
+
+function PS.saveImd(photon)
+    local phtimage = photon.name..'/'..photon:pathImd()
+    photon.imagedata:encode('png',phtimage)
+end
+
+
+function PS.setImd(name)
+    if #PS.photons>0 then
+        local photon = PS.photons[PS.systems.value]
+        photon.set.form.value = name
+        photon:setImageData()
+    end
+end
+
+function PS.loadImd()
+    for k,v in pairs(fl.loadPath(PS.loadpath,unpack(set.IMGEXT))) do
+        PS.imgbase[k] = love.image.newImageData(v)
+        PS.setImd(k)
     end
 end
 
@@ -143,17 +212,21 @@ function PS.dropFile(file)
     PS.loadpath = set.TMPDIR..'/'..fl.name(path)
     if fl.ext(path) == set.PHTEXT then
         PS.loadPht()
+    elseif fl.ext(fl.base(path)) == set.PHTEXT then
+        PS.loadPhtPng()
     else
         PS.loadImd()
     end
     PS.loadpath = ''
 end
 
-local nk
+
 function love.load()
     if arg[1] then print(set.VER, set.APPNAME, 'Editor (love2d)', arg[1]) end
+
     love.window.setMode(set.WID,set.HEI,{vsync=1,resizable=true})
     love.window.setPosition(0,0)
+
     love.graphics.setBackgroundColor(set.BGCLR)
     love.keyboard.setKeyRepeat(true)
     love.filesystem.createDirectory(set.TMPDIR)
@@ -186,15 +259,15 @@ function love.draw()
         love.graphics.rectangle('line',
                 PS.x-set.MARKRAD,PS.y-set.MARKRAD,set.MARKRAD*2,set.MARKRAD*2)
     end
-
     for i=1, #PS.photons do
         love.graphics.draw(PS.photons[i].particle)
-        local mode = i==PS.systems.value and 'fill' or 'line'
+          local mode = i==PS.systems.value and 'fill' or 'line'
         if PS.marks.value then
             local x,y = PS.photons[i].particle:getPosition()
             love.graphics.circle(mode,x,y,set.MARKRAD)
             love.graphics.print(PS.photons[i].id,x+set.MARKRAD,y+set.MARKRAD)
         end
+
     end
     nk:draw()
 end
@@ -225,6 +298,7 @@ function love.mousepressed(x, y, button, istouch)
     end
     if button == 2 then
         if PS.codestate == 'active' then
+            PS.tooltip = 'Done'
             love.system.setClipboardText(
                     PS.photons[PS.systems.value].code.value)
         end
@@ -240,9 +314,14 @@ end
 
 function love.mousemoved(x, y, dx, dy, istouch)
     nk:mousemoved(x, y, dx, dy, istouch)
+    PS.tooltip = 'Right Click to Copy'
     if #PS.photons>0 and PS.drag then
         PS.photons[PS.systems.value].particle:moveTo(x,y)
     end
+end
+
+function love.resize(w, h)
+    print(w,h)
 end
 
 function love.wheelmoved(x, y) nk:wheelmoved(x, y) end
