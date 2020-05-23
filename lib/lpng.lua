@@ -28,24 +28,6 @@
 if arg[0] then print('0.2 LPNG PNG (lua)', arg[0]) end
 if arg[1] then print('0.2 LPNG PNG (lua)',arg[1]) end
 
-
--- local function decode(path)
---     local file = love.filesystem.newFile(path,'r')
---     local all = file:read()
---     file:close()
---     local indcode, _ = all:find('--lua')
---     local cd = all:sub(indcode, #all)
-
---     local indimg, _ = all:find('PNG', 8)
---     local chars = all:sub(indimg-1, indcode-1)
-
---     local result = {}
---     for i=1,#chars do
---         result[#result+1]=tostring(string.byte(chars:sub(i,i)))
---     end
---     return load(cd)(result)
--- end
-
 -- lua<5.3
 local unpack = table.unpack or unpack
 local utf8 = require('utf8')
@@ -148,11 +130,13 @@ function LPNG.trim(data)
     local png, ihdr, idat, iend = LPNG.correct(data)
 
     if not png then return false end
-    local result = LPNG.clone(data,png,ihdr)
-    local dat = LPNG.clone(data,idat,iend)
-    for i=1,#dat do
-        result[#result+1]=dat[i]
-    end
+    local result = LPNG.clone(data,png,iend)
+
+    -- local result = LPNG.clone(data,png,ihdr)
+    -- local dat = LPNG.clone(data,idat,iend)
+    -- for i=1,#dat do
+    --     result[#result+1]=dat[i]
+    -- end
     return result
 end
 

@@ -26,12 +26,10 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
--- 1.4
--- auto decode
 -- 1.5
 -- move emitter
 -- 1.6
--- scripts?
+-- auto decode
 
 -- lua<5.3
 io.stdout:setvbuf('no')
@@ -162,12 +160,28 @@ function PS.savePht(photon)
     love.filesystem.remove(photon:pathImd())
 end
 
+-- local function decode(path)
+--     local file = love.filesystem.newFile(path,'r')
+--     local all = file:read()
+--     file:close()
+--     local indcode, _ = all:find('--lua')
+--     local cd = all:sub(indcode, #all)
+
+--     local indimg, _ = all:find('PNG', 8)
+--     local chars = all:sub(indimg-1, indcode-1)
+
+--     local result = {}
+--     for i=1,#chars do
+--         result[#result+1]=tostring(string.byte(chars:sub(i,i)))
+--     end
+--     return load(cd)(result)
+-- end
+
 function PS.loadPht()
     PS.new()
     if #PS.photons>0 then
         local photon = PS.photons[PS.systems.value]
         photon:import(fl.loadLove(PS.loadpath,photon.imagedata))
-        print(photon.set.form.value)
     end
 end
 
