@@ -1,6 +1,6 @@
 #!/usr/bin/env love
 -- PHOTON
--- 1.3
+-- 1.4
 -- Editor (love2d)
 
 -- main.lua

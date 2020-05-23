@@ -2,7 +2,7 @@
 
 Particle Editor for Love2d.
 
-v1.3
+v1.4
 
 ![Screenshot](screenshot/screenshot1.jpg)
 
@@ -20,6 +20,12 @@ v1.3
 
 New systems immediately emit particles. If you press 'Pause' system just stop update iternal state. If you press 'Stop' system finish produce particles but continue update state, even if all particles disappear. If you press 'Start' current system continue emission or start it again.
 
+'Start' - start system (auto start by default)
+
+'Pause' - stop produce particles
+
+'Stop' - stop system and reset lifetime
+
 'Reset' - delete all particles, reset values for buffer and lifetime counter.
 
 'Setup' - edit current particle system.
@@ -28,8 +34,7 @@ New systems immediately emit particles. If you press 'Pause' system just stop up
 
 # Buffer & Lifetime
 
-You can set Buffer size and Lifetime counter when create new system. To change values you need press 'Reset' for selected system.
-
+You can set Buffer size and Lifetime counter when create new system. To change values for exist system you need press 'Reset' for selected system.
 
 # Import image
 
