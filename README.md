@@ -12,23 +12,25 @@ v1.4
 
 'Delete' - delete particle system.
 
-'Export' 
+'Export'
 
 - Acivate 'Single' mode (save file '.pht.png' which include particle system)
 
 - Deactivate 'Single' mode (save file '.pht' & image in separate folder)
 
-New systems immediately emit particles. If you press 'Pause' system just stop update iternal state. If you press 'Stop' system finish produce particles but continue update state, even if all particles disappear. If you press 'Start' current system continue emission or start it again.
+New system immediately emit particles.
 
 'Start' - start system (auto start by default)
 
-'Pause' - stop produce particles
+'Pause' - stop produce particles.
 
-'Stop' - stop system and reset lifetime
+'Stop' - stop system and reset lifetime.
 
 'Reset' - delete all particles, reset values for buffer and lifetime counter.
 
 'Setup' - edit current particle system.
+
+'1 ... n' - select system to edit.
 
 'Mark' - show and hide marks in the display.
 
@@ -42,6 +44,8 @@ Drag & Drop image. Image automatically apply for the current system.
 
 You can find imported images in the Texture section of the editor.
 
+You can't change dimension of imported image.
+
 # Import Photon file '.pht.png'
 
 Drag & Drop '.pht.png' file and editor unpack file and run code with texture.
@@ -54,7 +58,7 @@ Drag & Drop '.pht' file together with '.png' or '.jpg' file.
 
 Editor automatically run imported particle system. Look for  imported texture in the Texture section of the editor
 
-# Export & use with Love2d 
+# Export & use with Love2d
 
 - Activate Single mode
 
@@ -80,11 +84,11 @@ end
 local particleSystem = decode('example.pht.png')
 ```
 
-Use this function which return ready to use particle system
+Function return ready to use particle system.
 
 - Deactivate Single mode
 
-Files exported in separate folder. Particle system saved with '.pht' extension. It is plain lua file which can used with 'require' or other import facilities. Image file saved as standart '.png' file. 
+Files exported in separate folder. Particle system saved with '.pht' extension. It is plain lua file which can used with 'require' or other import facilities. Image file saved as standart '.png' file.
 
 You can provide default path for particle system in editor/set.lua.
 Use constant DEFPATH = 'res/pht'
@@ -103,9 +107,15 @@ You can provide custom image or custom path.
 local particleSystem = love.filesystem.load('example.pht')('res/pht/custom.png')
 ```
 
+- Copy/Paste code
+
+Right click on code in 'Code' window. Provide custom image.
+
 # Warning
 
-Shared library nuklear.so compiled for Mac OS 64-bit.
+Use nuklear.dll for Windows32
+
+Use nuklear.so for Mac OS 10.15.4 (Catalina) 64-bit.
 
 Made with Nuklear, Love2d and some self-made libraries on top of Love Engine.
 

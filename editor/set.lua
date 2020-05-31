@@ -30,7 +30,7 @@ local SET = {
 
     GROUPMARGIN = 5,
     SINGHEI = 16,
-    DOUBHEI = 25,
+    DOUBHEI = 20,
     COLORROWHEI = 20,
     COLORBOXHEI = 256,
     PICKERHEI = 128,
@@ -47,7 +47,7 @@ local SET = {
     PBUFFER = 65536,
     PWH = 512,
     PSIZE = 8,
-    PEMIT = 2048,
+    PEMIT = 4096,
     PTIME = 64,
     PSPEED = 2048,
     PI = math.pi,

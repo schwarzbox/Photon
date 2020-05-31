@@ -16,8 +16,8 @@ function UI.editor(nk,PS)
     local PH = PS.photons[PS.systems.value]
     nk:frameBegin()
     if nk:windowBegin('Code', 0, set.MIDHEI, set.CODEWID, set.CODEHEI,
-            'border', 'title', 'movable','minimizable',
-            'scrollbar','scalable') then
+        'border', 'title', 'movable', 'minimizable',
+        'scrollbar','scalable') then
         local _,_,_,hei = nk:windowGetContentRegion()
         if PH then
             nk:layoutRow('dynamic', hei-set.GROUPMARGIN*2, 1)
@@ -29,8 +29,11 @@ function UI.editor(nk,PS)
     end
     nk:windowEnd()
 
-    if nk:windowBegin('Editor', set.MIDWID, 0, set.EDWID, set.EDHEI,
-            'border', 'title', 'movable','minimizable') then
+    local edh = set.DOUBHEI*2+set.GROUPMARGIN*2+set.SINGHEI*4+set.GROUPMARGIN*8
+    if nk:windowBegin('Editor', set.MIDWID, 0,
+        set.EDWID,
+        edh,
+        'border', 'title', 'movable', 'minimizable') then
 
         nk:layoutRow('dynamic',set.DOUBHEI+set.GROUPMARGIN*2, 1)
         nk:groupBegin('Menu','border')
@@ -60,7 +63,27 @@ function UI.editor(nk,PS)
             nk:styleDefault()
         nk:groupEnd()
 
+        nk:layoutRow('dynamic',set.SINGHEI*2+set.GROUPMARGIN*3, 1)
+        nk:groupBegin('Buffer','border')
+            nk:layoutRow('dynamic',set.SINGHEI, {0.2,0.05,0.25,0.25,0.25})
+            nk:label('Insert Mode')
+            nk:spacing(1)
+            nk:radio('top',PH.set.mode)
+            nk:radio('bottom',PH.set.mode)
+            nk:radio('random',PH.set.mode)
 
+            nk:layoutRow('dynamic',set.SINGHEI, 2)
+            nk:property('Buffer', 1, PH.set.buffer, set.PBUFFER, 10, 100)
+            nk:property('Lifetime', -1, PH.set.lifetime, set.PTIME, 1, 1)
+        nk:groupEnd()
+    end
+    nk:windowEnd()
+    end
+
+
+    if nk:windowBegin('Setup', set.MIDWID, edh, set.EDWID, set.EDHEI-edh,
+        'border', 'title', 'movable', 'minimizable') then
+        if PH then
         nk:layoutRow('dynamic',set.SINGHEI+set.GROUPMARGIN*2, 1)
         nk:groupBegin('Emit','border')
             nk:layoutRow('dynamic',set.SINGHEI, {0.2,0.5,0.1,0.05,0.15})
@@ -73,29 +96,10 @@ function UI.editor(nk,PS)
             nk:label(PH.count,'right')
         nk:groupEnd()
 
-
-        nk:layoutRow('dynamic',set.SINGHEI*3+set.GROUPMARGIN*4, 1)
-        nk:groupBegin('Buffer','border')
-            nk:layoutRow('dynamic',set.SINGHEI, {0.2,0.05,0.25,0.25,0.25})
-            nk:label('Insert Mode')
-            nk:spacing(1)
-            nk:radio('top',PH.set.mode)
-            nk:radio('bottom',PH.set.mode)
-            nk:radio('random',PH.set.mode)
-
-            nk:layoutRow('dynamic',set.SINGHEI, 1)
-            nk:property('Buffer', 1, PH.set.buffer, set.PBUFFER, 10, 100)
-
-            nk:layoutRow('dynamic',set.SINGHEI, 1)
-            nk:property('Lifetime', -1, PH.set.lifetime, set.PTIME, 1, 1)
-        nk:groupEnd()
-
-
         nk:layoutRow('dynamic',set.SINGHEI*5+set.GROUPMARGIN*5, 1)
         nk:groupBegin('Area','border')
             nk:layoutRow('dynamic',set.SINGHEI, 1)
             nk:property('Emission Rate', 0, PH.set.rate, set.PEMIT, 1, 10)
-
 
             nk:layoutRow('dynamic',set.SINGHEI, 4)
             nk:checkbox('outside', PH.set.areaDir)
@@ -149,9 +153,8 @@ function UI.editor(nk,PS)
         local oldwid, oldhei
         oldwid = PH.set.wid.value
         oldhei = PH.set.hei.value
-        nk:layoutRow('dynamic',set.SINGHEI, 1)
+        nk:layoutRow('dynamic',set.SINGHEI, 2)
         nk:property('Width', 1, PH.set.wid, set.PWH, 0.1, 1)
-        nk:layoutRow('dynamic',set.SINGHEI, 1)
         nk:property('Height', 1, PH.set.hei, set.PWH, 0.1, 1)
 
         nk:layoutRow('dynamic',set.SINGHEI, 2)
@@ -174,6 +177,7 @@ function UI.editor(nk,PS)
         nk:layoutRow('dynamic',set.SINGHEI,2)
         nk:property('Offset X', 0, PH.set.offsetX, PH.set.wid.value, 1, 1)
         nk:property('Offset Y', 0, PH.set.offsetY, PH.set.hei.value, 1, 1)
+
 
         local rowclr = #PH.set.color/4
         nk:layoutRow('dynamic', set.COLORROWHEI, rowclr/4)
@@ -249,9 +253,10 @@ function UI.editor(nk,PS)
                 PH.set.rotateMax.value, 0.01,0.1)
         nk:property('Rotate Max',
                 PH.set.rotateMin.value, PH.set.rotateMax,set.PI2, 0.01,0.1)
+        end
+        nk:windowEnd()
     end
-    end
-    nk:windowEnd()
+
     nk:frameEnd()
 end
 

@@ -238,7 +238,7 @@ end
 function love.load()
     if arg[1] then print(set.VER, set.APPNAME, 'Editor (love2d)', arg[1]) end
 
-    love.window.setMode(set.WID,set.HEI,{vsync=1,resizable=true})
+    -- love.window.setMode(set.WID,set.HEI,{vsync=1,resizable=true})
     love.window.setPosition(0,0)
 
     love.graphics.setBackgroundColor(set.BGCLR)
@@ -335,7 +335,7 @@ function love.mousemoved(x, y, dx, dy, istouch)
 end
 
 function love.resize(w, h)
-    print(w,h)
+
 end
 
 function love.wheelmoved(x, y) nk:wheelmoved(x, y) end

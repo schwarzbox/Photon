@@ -26,7 +26,7 @@ function love.conf(t)
     -- Remove all border visuals from the window (boolean)
     t.window.borderless = false
     -- Let the window be user-resizable (boolean)
-    t.window.resizable = false
+    t.window.resizable = true
     -- Minimum window width if the window is resizable (number)
     t.window.minwidth = 1
     -- Minimum window height if the window is resizable (number)

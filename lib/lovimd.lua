@@ -25,6 +25,7 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
+-- star
 -- 0.3
 -- improve gradient (circular linear)
 -- 1d array
