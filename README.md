@@ -2,7 +2,7 @@
 
 Particle Editor for Love2d.
 
-v1.4
+v1.5
 
 ![Screenshot](screenshot/screenshot1.jpg)
 
@@ -58,6 +58,8 @@ Drag & Drop '.pht' file together with '.png' or '.jpg' file.
 
 Editor automatically run imported particle system. Look for  imported texture in the Texture section of the editor
 
+![Screenshot](screenshot/screenshot2.jpg)
+
 # Export & use with Love2d
 
 - Activate Single mode
@@ -109,7 +111,9 @@ local particleSystem = love.filesystem.load('example.pht')('res/pht/custom.png')
 
 - Copy/Paste code
 
-Right click on code in 'Code' window. Provide custom image.
+Right click on code in 'Code' window to copy.
+
+Manualy provide custom image.
 
 # Warning
 

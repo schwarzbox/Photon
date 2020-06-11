@@ -1,6 +1,6 @@
 #!/usr/bin/env love
 -- PHOTON
--- 1.4
+-- 1.5
 -- Editor (love2d)
 
 -- main.lua
@@ -27,8 +27,9 @@
 -- DEALINGS IN THE SOFTWARE.
 
 -- 1.5
--- move emitter
+-- new figures
 -- 1.6
+-- move emitter
 -- auto decode
 
 -- lua<5.3

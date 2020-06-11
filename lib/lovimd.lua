@@ -25,7 +25,6 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
--- star
 -- 0.3
 -- improve gradient (circular linear)
 -- 1d array
@@ -425,35 +424,60 @@ function IMD.form(form,color,sx,sy,vertex,fill)
     sy = sy>=1 and sy or sx
     vertex = vertex or {}
     fill = fill or 'fill'
+
+    local midwid = sx / 2
+    local midhei = sy / 2
     if form == 'triangle' then
-        vertex = {0,0,sx,sy/2,0,sy}
+        vertex = {0,0,sx,midhei,0,sy}
+    elseif form == 'pentagon' then
+        local pentWid = sx * 0.381966011727603 * 0.5
+        local pentHei = sy * 0.381966011727603
+            vertex = {midwid, 0, sx, pentHei, sx-pentWid, sy,
+                        pentWid, sy, 0, pentHei}
     elseif form == 'hexagon' then
         local hexhei = sy * 0.25
-        local midwid = sx / 2
         vertex = {midwid, 0, sx, hexhei, sx, sy-hexhei,
                 midwid, sy, 0, sy-hexhei, 0, hexhei}
+    elseif form == 'star' or form == 'pentagram' then
+        local pentWid = sx * 0.381966011727603 * 0.5
+        local pentHei = sy * 0.381966011727603
 
-    elseif form == 'star' then
-        local midwid = sx/2
-        local midhei = sy/2
-        local wid3 = sx/3
-        local hei3 = sy/3
-        vertex={0,0,wid3,hei3,midwid,0,midwid,hei3,
-                sx,midhei,midwid,sy-hei3,midwid,sy,
-                wid3,sy-hei3,0,sy,midwid/2,midhei,0,0}
+        local starMinWid = sx * 0.116788321167883
+        local starMaxWid = sx * 0.187956204379562
+        local starMinHei = sy * 0.62043795620438
+        local starMaxHei = sy * 0.755474452554745
+
+       vertex = {midwid, 0, midwid+starMinWid, pentHei,
+                sx, pentHei, midwid+starMaxWid, starMinHei,
+                sx-pentWid, sy, midwid, starMaxHei,
+                pentWid, sy, midwid-starMaxWid, starMinHei,
+                0, pentHei, midwid-starMinWid, pentHei, midwid, 0}
     end
 
     color = color or WHITE
     local forms = {
-        ['circle']=function() love.graphics.circle(fill,sx/2,sy/2,sx/2) end,
+        ['circle']=function()
+            love.graphics.circle(fill,midwid,midhei,midwid) end,
         ['ellipse']=function()
-                    love.graphics.ellipse(fill,sx/2,sy/2,sx/2,sy/2,32) end,
+            love.graphics.ellipse(fill,midwid,midhei,midwid,midhei,32) end,
         ['triangle']=function() love.graphics.polygon(fill,vertex) end,
         ['rectangle']=function()love.graphics.rectangle(fill,0,0,sx,sy) end,
+        ['pentagon']=function() love.graphics.polygon(fill,vertex) end,
         ['hexagon']=function() love.graphics.polygon(fill,vertex) end,
-        ['star']=function() love.graphics.line(vertex) end,
+        ['star']=function()
+            love.graphics.polygon('fill',unpack(vertex,11,#vertex))
+            local v = {unpack(vertex,3,12)}
+            v[#v+1]=vertex[1]
+            v[#v+1]=vertex[2]
+            love.graphics.polygon('fill',v)
+            end,
+        ['pentagram']=function() love.graphics.line(vertex) end,
         ['polygon']=function() love.graphics.polygon(fill,vertex) end,
-        ['line']=function() love.graphics.line(vertex) end
+        ['line']=function() love.graphics.line(vertex) end,
+        ['arc']=function()
+            local ang = math.atan2(midhei,sx)
+            love.graphics.arc(fill, 'pie',0,midhei,sx,-ang,ang, 16)
+            end,
     }
 
     local canvas = love.graphics.newCanvas(sx,sy)
@@ -463,6 +487,10 @@ function IMD.form(form,color,sx,sy,vertex,fill)
     love.graphics.setColor(WHITE)
     love.graphics.setCanvas()
     local data = canvas:newImageData()
+
+    if form=='star' or form=='pentagram' or form=='pentagon' then
+        data = IMD.rotate(data,'CW')
+    end
     return data
 end
 

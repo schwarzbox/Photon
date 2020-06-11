@@ -11,7 +11,9 @@ local set = require('editor/set')
 
 local PH = {}
 PH.count = 0
-PH.forms = {'circle','ellipse','triangle','rectangle','hexagon','star'}
+PH.forms = {'circle','ellipse',
+            'triangle','rectangle','pentagon','hexagon', 'star',
+            'pentagram','arc'}
 PH.code = {value=''}
 PH.name = ''
 PH.set = {
@@ -103,6 +105,7 @@ function PH:setImageData()
                 self.set.wid.value,self.set.hei.value)
     end
     self.imagedata = texture
+    self.imagedata:encode('png','ph.png')
     self.image = love.graphics.newImage(texture)
 end
 
