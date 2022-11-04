@@ -52,7 +52,6 @@ function FL.loadAll(dir,...)
         exist = lovfs.getInfo(path)
         if (exist and exist.type=='file' and FL.isExt(path,...)) then
             arr[base] = path
-            print(base)
         end
     end
     return arr

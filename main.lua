@@ -26,9 +26,8 @@
 -- FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 -- DEALINGS IN THE SOFTWARE.
 
--- 1.5
--- new figures
 -- 1.6
+-- new figures
 -- move emitter
 -- auto decode
 
@@ -37,7 +36,7 @@ io.stdout:setvbuf('no')
 local unpack = table.unpack or unpack
 local utf8 = require('utf8')
 
--- for nuklear.sp path in bundle
+-- for nuklear.so path in the bundle
 local app_path = love.filesystem.getSourceBaseDirectory()
 if app_path then
     package.cpath = package.cpath .. ';'..app_path..'/../Frameworks/?.so'

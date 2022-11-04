@@ -170,7 +170,7 @@ function IMD.crop(imgdata,x1,y1,x2,y2)
     sy=y2-y1
     if sx<=0 then sx=1 end
     if sy<=0 then sy=1 end
-    print(sx,sy)
+
     local data=love.image.newImageData(sx,sy)
     data:paste(imgdata,0,0,x1,y1,sx,sy)
     return data
