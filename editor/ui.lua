@@ -1,5 +1,5 @@
 -- Tue Aug  6 17:30:49 2019
--- (c) Alexander Veledzimovich
+-- (c) Aliaksandr Veledzimovich
 -- ui PHOTON
 
 -- lua<5.3

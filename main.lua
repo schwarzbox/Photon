@@ -6,7 +6,7 @@
 -- main.lua
 
 -- MIT License
--- Copyright (c) 2019 Alexander Veledzimovich veledz@gmail.com
+-- Copyright (c) 2019 Aliaksandr Veledzimovich veledz@gmail.com
 
 -- Permission is hereby granted, free of charge, to any person obtaining a
 -- copy of this software and associated documentation files (the "Software"),
@@ -248,9 +248,14 @@ function love.load()
 end
 
 function love.update(dt)
-    local title = string.format('%s %s fps %.2d systems %.3d particles %.5d',
-                            set.APPNAME, set.VER, love.timer.getFPS(),
-                            #PS.photons, PS.count)
+    local title = string.format(
+        '%s %s fps %.2d systems %.3d particles %.5d',
+        set.APPNAME,
+        set.VER,
+        love.timer.getFPS(),
+        #PS.photons,
+        PS.count
+    )
     love.window.setTitle(title)
 
     ui.editor(nk,PS)
@@ -270,8 +275,13 @@ end
 
 function love.draw()
     if PS.marks.value then
-        love.graphics.rectangle('line',
-                PS.x-set.MARKRAD,PS.y-set.MARKRAD,set.MARKRAD*2,set.MARKRAD*2)
+        love.graphics.rectangle(
+            'line',
+            PS.x-set.MARKRAD,
+            PS.y-set.MARKRAD,
+            set.MARKRAD*2,
+            set.MARKRAD*2
+        )
     end
     for i=1, #PS.photons do
         love.graphics.draw(PS.photons[i].particle)
@@ -279,7 +289,9 @@ function love.draw()
         if PS.marks.value then
             local x,y = PS.photons[i].particle:getPosition()
             love.graphics.circle(mode,x,y,set.MARKRAD)
-            love.graphics.print(PS.photons[i].id,x+set.MARKRAD,y+set.MARKRAD)
+            love.graphics.print(
+                PS.photons[i].id,x+set.MARKRAD,y+set.MARKRAD
+            )
         end
 
     end
@@ -314,7 +326,8 @@ function love.mousepressed(x, y, button, istouch)
         if PS.codestate == 'active' then
             PS.tooltip = 'Done'
             love.system.setClipboardText(
-                    PS.photons[PS.systems.value].code.value)
+                PS.photons[PS.systems.value].code.value
+            )
         end
     end
 end

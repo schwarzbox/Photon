@@ -2,21 +2,17 @@
 
 v1.5
 
-Particle Editor for Love2d.
+Particle Editor for LÖVE.
 
-Made with Nuklear, Love2d and some self-made libraries on top of Love Engine.
+Made with LÖVE, love-nuklear, and some self-made libraries on top of the engine.
 
-[Release available for Mac OS 64-bit, Windows 64-bit & for Windows 32-bit](https://github.com/schwarzbox/Photon/releases)
+[Release available for MacOS-x86, Windows-64bit & Windows-32bit](https://github.com/schwarzbox/Photon/releases)
 
-To run source code: clone repository, download & install [LÖVE 11.3](https://love2d.org) for you system and run photon.love
+To run source code: clone repository, download & install [LÖVE 11.4](https://love2d.org) for your system and check [Warning](#Warning).
 
-# Warning
+Engine: [LÖVE Development Team](https://love2d.org/)
 
-Include nuklear in your PATH
-
-Use nuklear/nuklear.dll for Windows32
-
-Use nuklear/nuklear.so for Mac OS 10.15.4 (Catalina) 64-bit
+Design/Art/Code: [Aliaksandr Veledzimovich](https://twitter.com/veledzimovich)
 
 ![Screenshot](screenshot/screenshot1.jpg)
 
@@ -56,7 +52,7 @@ You can set Buffer size and Lifetime counter when create new system. To change v
 
 ## Import image
 
-Drag & Drop image. Image automatically apply for the current system.
+Drag&Drop image and it automatically attached to the current system.
 
 You can find imported images in the Texture section of the editor.
 
@@ -64,27 +60,31 @@ You can't change dimension of imported image.
 
 ## Import Photon file '.pht.png'
 
-Drag & Drop '.pht.png' file and editor unpack file and run code with texture.
+Drag&Drop '.pht.png' file and editor unpack file and run code with texture.
 
 ## Import Photon file '.pht'
 
-Drag & Drop '.pht' file and editor generate default texture for your script.
+Drag&Drop '.pht' file and editor generate default texture for your script.
 
-Drag & Drop '.pht' file together with '.png' or '.jpg' file.
+Drag&Drop '.pht' file together with '.png' or '.jpg' file.
 
 Editor automatically run imported particle system. Look for  imported texture in the Texture section of the editor
 
 ![Screenshot](screenshot/screenshot2.jpg)
 
-## Export & use with Love2d
+## Export & use with LÖVE
 
-- Activate Single mode
+1. Activate Single mode
 
-Particle system saved as single file with '.pht.png' extension. Before use you need to decode this file.
+Particle system saved as single file with '.pht.png' extension.
+
+Before use you need to decode this file.
+
+Function "decode" returns ready to use particle system.
 
 ``` lua
 local function decode(path)
-    local file = love.filesystem.newFile(path,'r')
+    local file = love.filesystem.newFile(path, 'r')
     local all = file:read()
     file:close()
     local indcode, _ = all:find('--lua')
@@ -94,19 +94,17 @@ local function decode(path)
     local chars = all:sub(indimg-1, indcode-1)
 
     local result = {}
-    for i=1,#chars do
-        result[#result+1]=tostring(string.byte(chars:sub(i,i)))
+    for i=1, #chars do
+        result[#result+1] = tostring(string.byte(chars:sub(i, i)))
     end
     return load(cd)(result)
 end
 local particleSystem = decode('example.pht.png')
 ```
 
-Function return ready to use particle system.
+2. Deactivate Single mode
 
-- Deactivate Single mode
-
-Files exported in separate folder. Particle system saved with '.pht' extension. It is plain lua file which can used with 'require' or other import facilities. Image file saved as standart '.png' file.
+Files exported in separate folder. Particle system saved with '.pht' extension. It is plain lua file which can be used with 'require' or other import facilities. Image file saved as standart '.png' file.
 
 You can provide default path for particle system in editor/set.lua.
 Use constant DEFPATH = 'res/pht'
@@ -125,9 +123,18 @@ You can provide custom image or custom path.
 local particleSystem = love.filesystem.load('example.pht')('res/pht/custom.png')
 ```
 
-- Copy/Paste code
+3. Copy/Paste code
 
 Right click on code in 'Code' window to copy.
 
 Manualy provide custom image.
+
+
+# Warning
+
+Include nuklear in your PATH
+
+Use nuklear/nuklear.dll for Windows-32bit & Windows-64bit
+
+Use nuklear/nuklear.so for MacOS x86
 

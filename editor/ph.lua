@@ -1,5 +1,5 @@
--- Wed Aug  7 20:43:04 2019
--- (c) Alexander Veledzimovich
+-- Wed Aug 7 20:43:04 2019
+-- (c) Aliaksandr Veledzimovich
 -- ph PHOTON
 
 -- lua<5.3

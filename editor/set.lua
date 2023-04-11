@@ -1,5 +1,5 @@
 -- Tue Aug  6 00:54:24 2019
--- (c) Alexander Veledzimovich
+-- (c) Aliaksandr Veledzimovich
 -- set PHOTON
 
 -- lua<5.3
